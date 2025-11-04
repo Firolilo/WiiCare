@@ -8,5 +8,5 @@ test('renders home title', () => {
       <App />
     </MemoryRouter>
   );
-  expect(screen.getByText(/WiiCare/i)).toBeInTheDocument();
+  expect(screen.getByRole('heading', { level: 1, name: /WiiCare/i })).toBeInTheDocument();
 });

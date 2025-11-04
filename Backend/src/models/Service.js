@@ -13,6 +13,8 @@ const ServiceSchema = new Schema(
   { timestamps: true }
 );
 
-ServiceSchema.index({ title: 'text', description: 'text', tags: 1, location: 1 });
+// Índices: texto para búsquedas y compuesto para filtros
+ServiceSchema.index({ title: 'text', description: 'text' });
+ServiceSchema.index({ tags: 1, location: 1 });
 
 module.exports = model('Service', ServiceSchema);
