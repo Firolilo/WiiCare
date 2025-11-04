@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import api from '../api/client';
 
 const AuthContext = createContext(null);
@@ -28,3 +29,7 @@ export function AuthProvider({ children }) {
 }
 
 export const useAuth = () => useContext(AuthContext);
+
+AuthProvider.propTypes = {
+  children: PropTypes.node,
+};

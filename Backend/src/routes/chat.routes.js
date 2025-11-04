@@ -1,4 +1,5 @@
 const express = require('express');
+
 const { auth } = require('../middleware/auth');
 const { listConversations, listMessages, sendMessage } = require('../controllers/chat.controller');
 

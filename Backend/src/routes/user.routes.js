@@ -1,4 +1,5 @@
 const express = require('express');
+
 const { getProfile, updateProfile, listCaregivers } = require('../controllers/user.controller');
 const { auth } = require('../middleware/auth');
 
