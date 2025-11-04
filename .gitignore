@@ -1,0 +1,38 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Node
+node_modules/
+**/node_modules/
+dist/
+build/
+.cache/
+
+# Env
+.env
+**/.env
+.env.local
+.env.*.local
+
+# Vite
+.vite
+*.tsbuildinfo
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+
+# Coverage
+coverage/
+**/coverage/
+
+# Misc
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

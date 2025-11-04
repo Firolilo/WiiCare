@@ -1,0 +1,23 @@
+{
+  "name": "wiicare",
+  "private": true,
+  "version": "0.1.0",
+  "description": "WiiCare monorepo: Frontend (React) + Backend (Express/Mongo)",
+  "workspaces": [
+    "Frontend",
+    "Backend"
+  ],
+  "scripts": {
+    "install:all": "npm install",
+    "start:backend": "npm --workspace Backend run dev",
+    "start:frontend": "npm --workspace Frontend run dev",
+    "build": "npm --workspace Frontend run build",
+    "test": "npm --workspace Backend run test && npm --workspace Frontend run test",
+    "lint": "npm --workspace Backend run lint && npm --workspace Frontend run lint",
+    "format": "npm --workspace Backend run format && npm --workspace Frontend run format",
+    "coverage:report": "npm --workspace Backend run test:coverage && npm --workspace Frontend run test:coverage"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
