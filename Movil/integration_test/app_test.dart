@@ -29,7 +29,7 @@ void main() {
       expect(find.text('Iniciar Sesión'), findsOneWidget);
 
       // Navegar a registro
-      final registerLink = find.text('Regístrate');
+      final registerLink = find.text('¿No tienes cuenta? Regístrate');
       expect(registerLink, findsOneWidget);
       await tester.tap(registerLink);
       await tester.pumpAndSettle();
@@ -83,11 +83,10 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
       // Navegar a registro
-      final registerLink = find.text('Regístrate');
-      if (await tester.pumpAndSettle() == 0) {
-        await tester.tap(registerLink);
-        await tester.pumpAndSettle();
-      }
+      final registerLink = find.text('¿No tienes cuenta? Regístrate');
+      expect(registerLink, findsOneWidget);
+      await tester.tap(registerLink);
+      await tester.pumpAndSettle();
 
       // Llenar formulario con rol de usuario
       await tester.enterText(
@@ -186,14 +185,17 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 2));
 
       // Ir a registro
-      final registerLink = find.text('Regístrate');
-      if (registerLink.evaluate().isNotEmpty) {
-        await tester.tap(registerLink);
-        await tester.pumpAndSettle();
-      }
+      final registerLink = find.text('¿No tienes cuenta? Regístrate');
+      expect(registerLink, findsOneWidget);
+      await tester.tap(registerLink);
+      await tester.pumpAndSettle();
 
-      // Intentar enviar formulario vacío
+      // Hacer scroll hacia abajo para ver el botón
       final submitButton = find.widgetWithText(ElevatedButton, 'Crear Cuenta');
+      await tester.ensureVisible(submitButton);
+      await tester.pumpAndSettle();
+      
+      // Intentar enviar formulario vacío
       await tester.tap(submitButton);
       await tester.pumpAndSettle();
 
@@ -220,7 +222,7 @@ void main() {
       expect(find.byKey(const Key('login_email_field')), findsOneWidget);
       expect(find.byKey(const Key('login_password_field')), findsOneWidget);
       expect(find.widgetWithText(ElevatedButton, 'Iniciar Sesión'), findsOneWidget);
-      expect(find.text('Regístrate'), findsOneWidget);
+      expect(find.text('¿No tienes cuenta? Regístrate'), findsOneWidget);
     });
   });
 }

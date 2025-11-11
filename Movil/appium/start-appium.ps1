@@ -18,12 +18,14 @@ try {
 # Verificar driver de UiAutomator2
 Write-Host "📱 Verificando driver de UiAutomator2..." -ForegroundColor Cyan
 $drivers = appium driver list --installed 2>&1 | Select-String "uiautomator2"
-if (-not $drivers) {
+if ($drivers) {
+    Write-Host "✅ Driver UiAutomator2 instalado" -ForegroundColor Green
+} else {
     Write-Host "⚠️  Driver UiAutomator2 no instalado" -ForegroundColor Yellow
     Write-Host "Instalando..." -ForegroundColor Cyan
-    cd $env:TEMP
+    Push-Location $env:TEMP
     appium driver install uiautomator2
-    cd -
+    Pop-Location
 }
 
 Write-Host ""

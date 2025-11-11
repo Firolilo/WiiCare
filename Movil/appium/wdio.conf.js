@@ -5,7 +5,9 @@ exports.config = {
   // Runner Configuration
   // ====================
   runner: 'local',
+  path: '/wd/hub',  // Appium base path
   port: 4723,
+  hostname: '127.0.0.1',
 
   // ==================
   // Specify Test Files
@@ -21,16 +23,17 @@ exports.config = {
   maxInstances: 1,
   capabilities: [
     {
-      // Android capabilities
+      // Android capabilities - Dispositivo Real
       platformName: 'Android',
-      'appium:deviceName': 'Android Emulator',
-      'appium:platformVersion': '13.0', // Cambiar según tu emulador
+      'appium:deviceName': 'AC3N6R4C21001232', // Dispositivo real conectado
+      'appium:udid': 'AC3N6R4C21001232',
+      'appium:platformVersion': '15.0', // Android 15
       'appium:automationName': 'UiAutomator2',
       'appium:app': path.join(process.cwd(), '../build/app/outputs/flutter-apk/app-debug.apk'),
       'appium:noReset': false,
       'appium:fullReset': false,
       'appium:newCommandTimeout': 240,
-      'appium:appWaitActivity': 'com.wiicare.app.MainActivity',
+      'appium:appWaitActivity': 'com.wiicare.wiicare_movil.MainActivity',
     }
   ],
 

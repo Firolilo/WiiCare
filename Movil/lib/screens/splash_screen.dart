@@ -13,18 +13,18 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  bool _hasChecked = false;
-
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_hasChecked) {
-      _hasChecked = true;
+  void initState() {
+    super.initState();
+    // Ejecutar después de que el widget esté completamente construido
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkSession();
-    }
+    });
   }
 
   Future<void> _checkSession() async {
+    if (!mounted) return;
+    
     final authProvider = context.read<AuthProvider>();
     final hasSession = await authProvider.loadSession();
 
