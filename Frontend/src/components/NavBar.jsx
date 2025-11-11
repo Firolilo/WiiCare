@@ -31,7 +31,7 @@ export default function NavBar() {
                 Dashboard
               </Link>
               <Link
-                to={`/perfil/${user._id}`}
+                to={`/perfil/${user.id}`}
                 className="text-[#2B4C7E] hover:text-[#3A6EA5]"
               >
                 Mi perfil
