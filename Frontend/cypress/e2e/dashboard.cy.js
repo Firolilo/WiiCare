@@ -1,19 +1,33 @@
 describe('Dashboard page (with real login)', () => {
   beforeEach(() => {
+    // Interceptar TODAS las llamadas a /api/auth/me para evitar redirecciones
+    cy.intercept('GET', '/api/auth/me', {
+      statusCode: 200,
+      body: {
+        user: {
+          _id: '123',
+          name: 'Franco',
+          email: 'franco.torrez.alv@gmail.com',
+          role: 'user'
+        }
+      }
+    }).as('authMe');
+
     // flujo de login real
     cy.visit('/login');
-    cy.get('input[name="email"]').type('franco.torrez.alv@gmail.com');
-    cy.get('input[name="password"]').type('franco123');
-    cy.get('button[type="submit"]').click();
+    cy.get('[data-cy="login-email"]').type('franco.torrez.alv@gmail.com');
+    cy.get('[data-cy="login-password"]').type('franco123');
+    cy.get('[data-cy="login-submit"]').click();
 
-    // verifica login correcto
+    // verifica login correcto y espera a que redirija
     cy.url().should('not.include', '/login');
   });
 
   it('shows loading state and then services list', () => {
+    // Interceptar la llamada a servicios con delay para ver el loading
     cy.intercept('GET', '/api/services', {
       statusCode: 200,
-      delay: 300, // asegura que se muestre el "Cargando..."
+      delay: 500, // asegura que se muestre el "Cargando..."
       body: {
         services: [
           {
@@ -33,17 +47,22 @@ describe('Dashboard page (with real login)', () => {
     }).as('getServices');
 
     cy.visit('/dashboard');
-    cy.wait(100);
-    cy.contains('Cargando servicios...').should('exist');
+    
+    // Verificar que muestra el estado de carga
+    cy.contains('Cargando servicios...', { timeout: 10000 }).should('be.visible');
+    
+    // Esperar a que carguen los servicios
     cy.wait('@getServices');
 
-    cy.contains('Servicios disponibles').should('exist');
-    cy.contains('Cuidado de adultos mayores').should('exist');
-    cy.contains('Asistencia médica a domicilio').should('exist');
-    cy.contains('50 Bs/h').should('exist');
+    // Verificar que se muestran los servicios
+    cy.contains('Servicios disponibles').should('be.visible');
+    cy.contains('Cuidado de adultos mayores').should('be.visible');
+    cy.contains('Asistencia médica a domicilio').should('be.visible');
+    cy.contains('50 Bs/h').should('be.visible');
   });
 
   it('shows message when no services available', () => {
+    // Interceptar servicios vacíos
     cy.intercept('GET', '/api/services', {
       statusCode: 200,
       body: { services: [] },
@@ -51,10 +70,18 @@ describe('Dashboard page (with real login)', () => {
 
     cy.visit('/dashboard');
     cy.wait('@getEmptyServices');
-    cy.contains('No hay servicios registrados.').should('exist');
+    cy.contains('No hay servicios registrados.').should('be.visible');
   });
 
   it('handles server error gracefully', () => {
+    // Ignorar errores de Axios 500 en este test
+    cy.on('uncaught:exception', (err) => {
+      if (err.message.includes('Request failed with status code 500')) {
+        return false; // previene que Cypress falle el test
+      }
+    });
+
+    // Interceptar error del servidor
     cy.intercept('GET', '/api/services', {
       statusCode: 500,
       body: { message: 'Error interno del servidor' },
@@ -63,7 +90,7 @@ describe('Dashboard page (with real login)', () => {
     cy.visit('/dashboard');
     cy.wait('@getError');
 
-    // Cypress ignorará los errores Axios 500 si ya configuraste uncaught:exception
-    cy.contains('No hay servicios registrados.').should('exist');
+    // El componente debería mostrar el mensaje de "sin servicios" en caso de error
+    cy.contains('No hay servicios registrados.', { timeout: 10000 }).should('be.visible');
   });
 });

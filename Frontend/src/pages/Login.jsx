@@ -51,12 +51,16 @@ export default function AuthForm() {
           {isRegister && (
             <>
               <input
+                data-cy="register-name"
+                name="name"
                 className="w-full border border-[#D8CFC4] focus:border-[#3A6EA5] p-2 rounded-lg outline-none transition"
                 placeholder="Nombre"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
               <select
+                data-cy="register-role"
+                name="role"
                 className="w-full border border-[#D8CFC4] focus:border-[#3A6EA5] p-2 rounded-lg outline-none transition"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
@@ -68,6 +72,9 @@ export default function AuthForm() {
           )}
 
           <input
+            data-cy="login-email"
+            name="email"
+            type="email"
             className="w-full border border-[#D8CFC4] focus:border-[#3A6EA5] p-2 rounded-lg outline-none transition"
             placeholder="Correo electrónico"
             value={email}
@@ -75,8 +82,10 @@ export default function AuthForm() {
           />
 
           <input
-            className="w-full border border-[#D8CFC4] focus:border-[#3A6EA5] p-2 rounded-lg outline-none transition"
+            data-cy="login-password"
+            name="password"
             type="password"
+            className="w-full border border-[#D8CFC4] focus:border-[#3A6EA5] p-2 rounded-lg outline-none transition"
             placeholder="Contraseña"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -89,6 +98,7 @@ export default function AuthForm() {
           )}
 
           <button
+            data-cy="login-submit"
             type="submit"
             disabled={loading}
             className="bg-[#3A6EA5] hover:bg-[#2B4C7E] text-white px-4 py-2 rounded-lg w-full transition-all shadow-sm disabled:bg-[#8FAFD3]"
@@ -100,6 +110,7 @@ export default function AuthForm() {
         <p className="text-center mt-4 text-sm text-[#5A5A5A]">
           {isRegister ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?'}{' '}
           <button
+            data-cy="toggle-auth-mode"
             type="button"
             className="text-[#2B4C7E] hover:underline"
             onClick={() => setIsRegister(!isRegister)}
