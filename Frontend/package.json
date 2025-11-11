@@ -12,6 +12,7 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint \"src/**/*.{js,jsx}\"",
     "format": "prettier --write \"src/**/*.{js,jsx,css}\"",
+    "cypress:open": "cypress open",
     "cypress:run": "cypress run"
   },
   "dependencies": {

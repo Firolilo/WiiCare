@@ -24,6 +24,23 @@ async function seed() {
     location: 'Madrid',
   });
 
+  // Usuario de prueba simple para testing
+  const testUser = await User.create({
+    name: 'Test User',
+    email: 'test@example.com',
+    passwordHash: await hashPassword('password123'),
+    role: 'user',
+    location: 'San José',
+  });
+
+  const testCaregiver = await User.create({
+    name: 'Test Caregiver',
+    email: 'test@caregiver.com',
+    passwordHash: await hashPassword('password123'),
+    role: 'caregiver',
+    location: 'San José',
+  });
+
   await Service.create({
     caregiver: caregiver._id,
     title: 'Cuidado especializado TEA',
@@ -33,7 +50,20 @@ async function seed() {
     location: 'Madrid',
   });
 
-  console.log('Seed completado:', { caregiver: caregiver.email, user: user.email });
+  await Service.create({
+    caregiver: testCaregiver._id,
+    title: 'Cuidado de adultos mayores',
+    description: 'Cuidado especializado para personas de la tercera edad',
+    rate: 12,
+    tags: ['Adultos', 'Enfermería'],
+    location: 'San José',
+  });
+
+  console.log('✅ Seed completado:');
+  console.log('  - Cuidador Demo:', caregiver.email, '/ Password123!');
+  console.log('  - Usuario Demo:', user.email, '/ Password123!');
+  console.log('  - Test User:', testUser.email, '/ password123');
+  console.log('  - Test Caregiver:', testCaregiver.email, '/ password123');
   await mongoose.connection.close();
 }
 
