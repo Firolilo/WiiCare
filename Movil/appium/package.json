@@ -1,0 +1,26 @@
+{
+  "name": "wiicare-appium-tests",
+  "version": "1.0.0",
+  "description": "Appium automated tests for WiiCare mobile app",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha test/specs/**/*.js",
+    "test:android": "mocha test/specs/**/*.js --grep android",
+    "test:ios": "mocha test/specs/**/*.js --grep ios"
+  },
+  "keywords": ["appium", "wiicare", "mobile", "testing"],
+  "author": "WiiCare Team",
+  "license": "MIT",
+  "devDependencies": {
+    "appium": "^2.4.1",
+    "mocha": "^10.2.0",
+    "chai": "^4.3.10",
+    "wd": "^1.14.0",
+    "webdriverio": "^8.27.0",
+    "@wdio/cli": "^8.27.0",
+    "@wdio/local-runner": "^8.27.0",
+    "@wdio/mocha-framework": "^8.27.0",
+    "@wdio/spec-reporter": "^8.27.0"
+  },
+  "dependencies": {}
+}
