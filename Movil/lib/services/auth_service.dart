@@ -29,11 +29,17 @@ class AuthService {
     );
 
     // Guardar token
-    final token = response['token'] as String;
+    final token = response['token'] as String?;
+    if (token == null) {
+      throw Exception('Token no recibido del servidor');
+    }
     await _api.setToken(token);
 
     // Parsear y guardar usuario
-    final userData = response['user'] as Map<String, dynamic>;
+    final userData = response['user'] as Map<String, dynamic>?;
+    if (userData == null) {
+      throw Exception('Datos de usuario no recibidos del servidor');
+    }
     _currentUser = User.fromJson(userData);
     await _saveUser(_currentUser!);
 
@@ -54,11 +60,17 @@ class AuthService {
     );
 
     // Guardar token
-    final token = response['token'] as String;
+    final token = response['token'] as String?;
+    if (token == null) {
+      throw Exception('Token no recibido del servidor');
+    }
     await _api.setToken(token);
 
     // Parsear y guardar usuario
-    final userData = response['user'] as Map<String, dynamic>;
+    final userData = response['user'] as Map<String, dynamic>?;
+    if (userData == null) {
+      throw Exception('Datos de usuario no recibidos del servidor');
+    }
     _currentUser = User.fromJson(userData);
     await _saveUser(_currentUser!);
 
@@ -68,7 +80,10 @@ class AuthService {
   /// Obtener perfil actual (con token)
   Future<User> getMe() async {
     final response = await _api.get('${AppConstants.authEndpoint}/me');
-    final userData = response['user'] as Map<String, dynamic>;
+    final userData = response['user'] as Map<String, dynamic>?;
+    if (userData == null) {
+      throw Exception('Datos de usuario no recibidos del servidor');
+    }
     _currentUser = User.fromJson(userData);
     await _saveUser(_currentUser!);
     return _currentUser!;

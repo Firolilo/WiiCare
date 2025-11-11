@@ -13,10 +13,15 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  bool _hasChecked = false;
+
   @override
-  void initState() {
-    super.initState();
-    _checkSession();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_hasChecked) {
+      _hasChecked = true;
+      _checkSession();
+    }
   }
 
   Future<void> _checkSession() async {

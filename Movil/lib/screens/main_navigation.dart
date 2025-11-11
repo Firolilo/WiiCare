@@ -15,20 +15,24 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const ServicesScreen(),
-    const ChatScreen(),
-    const ProfileScreen(),
-  ];
+  void _onTabTapped(int index) {
+    setState(() => _currentIndex = index);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> _screens = [
+      HomeScreen(onNavigateToTab: _onTabTapped),
+      const ServicesScreen(),
+      const ChatScreen(),
+      const ProfileScreen(),
+    ];
+
     return Scaffold(
       body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
+        onTap: _onTabTapped,
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(

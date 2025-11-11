@@ -4,7 +4,9 @@ import '../providers/auth_provider.dart';
 
 /// Pantalla de inicio (Home)
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final Function(int)? onNavigateToTab;
+  
+  const HomeScreen({super.key, this.onNavigateToTab});
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +63,7 @@ class HomeScreen extends StatelessWidget {
               description: 'Encuentra cuidadores cerca de ti',
               onTap: () {
                 // Navegar a pestaña de Servicios
-                DefaultTabController.of(context).animateTo(1);
+                onNavigateToTab?.call(1);
               },
             ),
             const SizedBox(height: 12),
@@ -70,7 +72,7 @@ class HomeScreen extends StatelessWidget {
               title: 'Mis Conversaciones',
               description: 'Revisa tus chats activos',
               onTap: () {
-                DefaultTabController.of(context).animateTo(2);
+                onNavigateToTab?.call(2);
               },
             ),
             if (user?.isCaregiver == true) ...[
