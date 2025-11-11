@@ -5,12 +5,28 @@ export default function Dashboard() {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    api
-      .get('/services')
-      .then((res) => setServices(res.data.services || []))
-      .finally(() => setLoading(false));
-  }, []);
+useEffect(() => {
+  let active = true; // evita updates después de desmontar
+
+  const fetchServices = async () => {
+    try {
+      const res = await api.get('/services');
+      if (active) setServices(res.data.services || []);
+    } catch (err) {
+      console.error('Error al cargar servicios:', err);
+      if (active) setServices([]); // fallback para error
+    } finally {
+      if (active) setLoading(false);
+    }
+  };
+
+  fetchServices();
+
+  return () => {
+    active = false;
+  };
+}, []);
+
 
   if (loading)
     return (

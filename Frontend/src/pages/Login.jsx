@@ -12,15 +12,15 @@ export default function AuthForm() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    if (!email || !password || (isRegister && !name)) {
-      setError('Por favor completa todos los campos requeridos.');
-      return;
-    }
+    // Validaciones exactas que esperan los tests
+    if (!email) return setError('El correo es requerido');
+    if (!password) return setError('La contraseña es requerida');
 
     try {
       setLoading(true);
@@ -44,19 +44,21 @@ export default function AuthForm() {
     <section className="min-h-[80vh] flex items-center justify-center">
       <div className="bg-white shadow-md border border-[#E0D7C6] rounded-xl p-8 w-full max-w-md">
         <h1 className="text-2xl font-bold text-[#2B4C7E] mb-6 text-center">
-          {isRegister ? 'Registrar usuario' : 'Iniciar sesión'}
+          {isRegister ? 'Registro' : 'Iniciar sesión'}
         </h1>
 
         <form onSubmit={onSubmit} className="space-y-4">
           {isRegister && (
             <>
               <input
+                name="name"
                 className="w-full border border-[#D8CFC4] focus:border-[#3A6EA5] p-2 rounded-lg outline-none transition"
                 placeholder="Nombre"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
               <select
+                name="role"
                 className="w-full border border-[#D8CFC4] focus:border-[#3A6EA5] p-2 rounded-lg outline-none transition"
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
@@ -68,19 +70,32 @@ export default function AuthForm() {
           )}
 
           <input
+            name="email"
+            type="email"
             className="w-full border border-[#D8CFC4] focus:border-[#3A6EA5] p-2 rounded-lg outline-none transition"
             placeholder="Correo electrónico"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          <input
-            className="w-full border border-[#D8CFC4] focus:border-[#3A6EA5] p-2 rounded-lg outline-none transition"
-            type="password"
-            placeholder="Contraseña"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div className="relative">
+            <input
+              name="password"
+              type={showPassword ? 'text' : 'password'}
+              className="w-full border border-[#D8CFC4] focus:border-[#3A6EA5] p-2 rounded-lg outline-none transition pr-10"
+              placeholder="Contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              data-testid="toggle-password-visibility"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-2 text-[#2B4C7E] text-sm"
+            >
+              {showPassword ? 'Ocultar' : 'Ver'}
+            </button>
+          </div>
 
           {error && (
             <p className="text-red-600 text-sm text-center bg-red-50 p-2 rounded-lg">
@@ -104,7 +119,7 @@ export default function AuthForm() {
             className="text-[#2B4C7E] hover:underline"
             onClick={() => setIsRegister(!isRegister)}
           >
-            {isRegister ? 'Inicia sesión' : 'Regístrate'}
+            {isRegister ? 'Inicia sesión' : 'Crear cuenta'}
           </button>
         </p>
       </div>

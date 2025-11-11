@@ -5,12 +5,22 @@ export default function Caregivers() {
   const [caregivers, setCaregivers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    api
-      .get('/users/caregivers')
-      .then((res) => setCaregivers(res.data.caregivers || []))
-      .finally(() => setLoading(false));
-  }, []);
+    useEffect(() => {
+    const fetchCaregivers = async () => {
+        try {
+        const res = await api.get('/users/caregivers');
+        setCaregivers(res.data.caregivers || []);
+        } catch (err) {
+        console.error('Error al cargar cuidadores:', err);
+        setCaregivers([]); // fallback seguro
+        } finally {
+        setLoading(false);
+        }
+    };
+
+    fetchCaregivers();
+    }, []);
+
 
   if (loading)
     return (
