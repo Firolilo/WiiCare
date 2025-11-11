@@ -29,11 +29,12 @@ exports.config = {
       'appium:udid': 'AC3N6R4C21001232',
       'appium:platformVersion': '15.0', // Android 15
       'appium:automationName': 'UiAutomator2',
-      'appium:app': path.join(process.cwd(), '../build/app/outputs/flutter-apk/app-debug.apk'),
+      'appium:app': path.join(__dirname, '../build/app/outputs/flutter-apk/app-debug.apk'),
+      'appium:appPackage': 'com.example.wiicare_movil',
+      'appium:appActivity': '.MainActivity',
       'appium:noReset': false,
       'appium:fullReset': false,
       'appium:newCommandTimeout': 240,
-      'appium:appWaitActivity': 'com.wiicare.wiicare_movil.MainActivity',
     }
   ],
 

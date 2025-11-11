@@ -6,10 +6,13 @@ const assert = require('assert');
  */
 const getAndroidCapabilities = () => ({
   platformName: 'Android',
-  'appium:deviceName': 'Android Emulator',
-  'appium:platformVersion': '13.0',
+  'appium:deviceName': 'AC3N6R4C21001232',
+  'appium:udid': 'AC3N6R4C21001232',
+  'appium:platformVersion': '15.0',
   'appium:automationName': 'UiAutomator2',
-  'appium:app': require('path').join(__dirname, '../../build/app/outputs/flutter-apk/app-debug.apk'),
+  'appium:app': require('path').join(__dirname, '../../../build/app/outputs/flutter-apk/app-debug.apk'),
+  'appium:appPackage': 'com.example.wiicare_movil',
+  'appium:appActivity': '.MainActivity',
   'appium:noReset': false,
   'appium:fullReset': false,
   'appium:newCommandTimeout': 240,
@@ -41,7 +44,7 @@ describe('US1: Caregiver Registration and Service Posting', function() {
   before(async function() {
     driver = await remote({
       logLevel: 'info',
-      path: '/',
+      path: '/wd/hub',
       port: 4723,
       capabilities: getAndroidCapabilities()
     });
@@ -130,7 +133,7 @@ describe('US2: Search Caregivers by Location and Type', function() {
   before(async function() {
     driver = await remote({
       logLevel: 'info',
-      path: '/',
+      path: '/wd/hub',
       port: 4723,
       capabilities: getAndroidCapabilities()
     });
@@ -213,7 +216,7 @@ describe('US3: User Login and Chat Access', function() {
   before(async function() {
     driver = await remote({
       logLevel: 'info',
-      path: '/',
+      path: '/wd/hub',
       port: 4723,
       capabilities: getAndroidCapabilities()
     });

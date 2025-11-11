@@ -87,42 +87,54 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 32),
 
                 // Campo de nombre
-                TextFormField(
-                  key: const Key('register_name_field'),
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Nombre completo',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.person),
+                Semantics(
+                  label: 'register_name_field',
+                  identifier: 'register_name_field',
+                  textField: true,
+                  enabled: true,
+                  child: TextFormField(
+                    key: const Key('register_name_field'),
+                    controller: _nameController,
+                    decoration: const InputDecoration(
+                      labelText: 'Nombre completo',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.person),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Por favor ingresa tu nombre';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Por favor ingresa tu nombre';
-                    }
-                    return null;
-                  },
                 ),
                 const SizedBox(height: 16),
 
                 // Campo de email
-                TextFormField(
-                  key: const Key('register_email_field'),
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    border: OutlineInputBorder(),
-                    prefixIcon: Icon(Icons.email),
+                Semantics(
+                  label: 'register_email_field',
+                  identifier: 'register_email_field',
+                  textField: true,
+                  enabled: true,
+                  child: TextFormField(
+                    key: const Key('register_email_field'),
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: const InputDecoration(
+                      labelText: 'Email',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.email),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Por favor ingresa tu email';
+                      }
+                      if (!value.contains('@')) {
+                        return 'Por favor ingresa un email válido';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.trim().isEmpty) {
-                      return 'Por favor ingresa tu email';
-                    }
-                    if (!value.contains('@')) {
-                      return 'Por favor ingresa un email válido';
-                    }
-                    return null;
-                  },
                 ),
                 const SizedBox(height: 16),
 
@@ -141,29 +153,43 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                         const SizedBox(height: 8),
-                        RadioListTile<String>(
-                          key: const Key('role_user'),
-                          title: const Text('Usuario'),
-                          subtitle: const Text('Buscar cuidadores'),
-                          value: 'user',
-                          groupValue: _selectedRole,
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedRole = value!;
-                            });
-                          },
+                        Semantics(
+                          label: 'role_user',
+                          identifier: 'role_user',
+                          button: true,
+                          selected: _selectedRole == 'user',
+                          enabled: true,
+                          child: RadioListTile<String>(
+                            key: const Key('role_user'),
+                            title: const Text('Usuario'),
+                            subtitle: const Text('Buscar cuidadores'),
+                            value: 'user',
+                            groupValue: _selectedRole,
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedRole = value!;
+                              });
+                            },
+                          ),
                         ),
-                        RadioListTile<String>(
-                          key: const Key('role_caregiver'),
-                          title: const Text('Cuidador'),
-                          subtitle: const Text('Ofrecer servicios de cuidado'),
-                          value: 'caregiver',
-                          groupValue: _selectedRole,
-                          onChanged: (value) {
-                            setState(() {
-                              _selectedRole = value!;
-                            });
-                          },
+                        Semantics(
+                          label: 'role_caregiver',
+                          identifier: 'role_caregiver',
+                          button: true,
+                          selected: _selectedRole == 'caregiver',
+                          enabled: true,
+                          child: RadioListTile<String>(
+                            key: const Key('role_caregiver'),
+                            title: const Text('Cuidador'),
+                            subtitle: const Text('Ofrecer servicios de cuidado'),
+                            value: 'caregiver',
+                            groupValue: _selectedRole,
+                            onChanged: (value) {
+                              setState(() {
+                                _selectedRole = value!;
+                              });
+                            },
+                          ),
                         ),
                       ],
                     ),
@@ -172,66 +198,78 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 16),
 
                 // Campo de contraseña
-                TextFormField(
-                  key: const Key('register_password_field'),
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: 'Contraseña',
-                    border: const OutlineInputBorder(),
-                    prefixIcon: const Icon(Icons.lock),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                Semantics(
+                  label: 'register_password_field',
+                  identifier: 'register_password_field',
+                  textField: true,
+                  enabled: true,
+                  child: TextFormField(
+                    key: const Key('register_password_field'),
+                    controller: _passwordController,
+                    obscureText: _obscurePassword,
+                    decoration: InputDecoration(
+                      labelText: 'Contraseña',
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.lock),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          });
+                        },
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _obscurePassword = !_obscurePassword;
-                        });
-                      },
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor ingresa una contraseña';
+                      }
+                      if (value.length < 6) {
+                        return 'La contraseña debe tener al menos 6 caracteres';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor ingresa una contraseña';
-                    }
-                    if (value.length < 6) {
-                      return 'La contraseña debe tener al menos 6 caracteres';
-                    }
-                    return null;
-                  },
                 ),
                 const SizedBox(height: 16),
 
                 // Campo de confirmar contraseña
-                TextFormField(
-                  key: const Key('register_confirm_password_field'),
-                  controller: _confirmPasswordController,
-                  obscureText: _obscureConfirmPassword,
-                  decoration: InputDecoration(
-                    labelText: 'Confirmar contraseña',
-                    border: const OutlineInputBorder(),
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                Semantics(
+                  label: 'register_confirm_password_field',
+                  identifier: 'register_confirm_password_field',
+                  textField: true,
+                  enabled: true,
+                  child: TextFormField(
+                    key: const Key('register_confirm_password_field'),
+                    controller: _confirmPasswordController,
+                    obscureText: _obscureConfirmPassword,
+                    decoration: InputDecoration(
+                      labelText: 'Confirmar contraseña',
+                      border: const OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.lock_outline),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureConfirmPassword ? Icons.visibility : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _obscureConfirmPassword = !_obscureConfirmPassword;
+                          });
+                        },
                       ),
-                      onPressed: () {
-                        setState(() {
-                          _obscureConfirmPassword = !_obscureConfirmPassword;
-                        });
-                      },
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Por favor confirma tu contraseña';
+                      }
+                      if (value != _passwordController.text) {
+                        return 'Las contraseñas no coinciden';
+                      }
+                      return null;
+                    },
                   ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Por favor confirma tu contraseña';
-                    }
-                    if (value != _passwordController.text) {
-                      return 'Las contraseñas no coinciden';
-                    }
-                    return null;
-                  },
                 ),
                 const SizedBox(height: 24),
 
@@ -260,22 +298,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
 
                 // Botón de registro
-                ElevatedButton(
-                  key: const Key('register_submit_button'),
-                  onPressed: authProvider.isLoading ? null : _handleRegister,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                Semantics(
+                  label: 'register_submit_button',
+                  identifier: 'register_submit_button',
+                  button: true,
+                  enabled: true,
+                  child: ElevatedButton(
+                    key: const Key('register_submit_button'),
+                    onPressed: authProvider.isLoading ? null : _handleRegister,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                    ),
+                    child: authProvider.isLoading
+                        ? const SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text(
+                            'Crear Cuenta',
+                            style: TextStyle(fontSize: 16),
+                          ),
                   ),
-                  child: authProvider.isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text(
-                          'Crear Cuenta',
-                          style: TextStyle(fontSize: 16),
-                        ),
                 ),
                 const SizedBox(height: 16),
 

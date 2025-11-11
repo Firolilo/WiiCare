@@ -87,63 +87,87 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                   const SizedBox(height: 48),
-                  TextFormField(
-                    key: const Key('login_email_field'),
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: Icon(Icons.email),
+                  Semantics(
+                    label: 'login_email_field',
+                    identifier: 'login_email_field',
+                    textField: true,
+                    enabled: true,
+                    child: TextFormField(
+                      key: const Key('login_email_field'),
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(
+                        labelText: 'Email',
+                        prefixIcon: Icon(Icons.email),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor ingresa tu email';
+                        }
+                        if (!value.contains('@')) {
+                          return 'Ingresa un email válido';
+                        }
+                        return null;
+                      },
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor ingresa tu email';
-                      }
-                      if (!value.contains('@')) {
-                        return 'Ingresa un email válido';
-                      }
-                      return null;
-                    },
                   ),
                   const SizedBox(height: 16),
-                  TextFormField(
-                    key: const Key('login_password_field'),
-                    controller: _passwordController,
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Contraseña',
-                      prefixIcon: Icon(Icons.lock),
+                  Semantics(
+                    label: 'login_password_field',
+                    identifier: 'login_password_field',
+                    textField: true,
+                    enabled: true,
+                    child: TextFormField(
+                      key: const Key('login_password_field'),
+                      controller: _passwordController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Contraseña',
+                        prefixIcon: Icon(Icons.lock),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor ingresa tu contraseña';
+                        }
+                        return null;
+                      },
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Por favor ingresa tu contraseña';
-                      }
-                      return null;
-                    },
                   ),
                   const SizedBox(height: 24),
-                  ElevatedButton(
-                    key: const Key('login_submit_button'),
-                    onPressed: _isLoading ? null : _handleLogin,
-                    style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
+                  Semantics(
+                    label: 'login_submit_button',
+                    identifier: 'login_submit_button',
+                    button: true,
+                    enabled: true,
+                    child: ElevatedButton(
+                      key: const Key('login_submit_button'),
+                      onPressed: _isLoading ? null : _handleLogin,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                      ),
+                      child: _isLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text('Iniciar Sesión'),
                     ),
-                    child: _isLoading
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Text('Iniciar Sesión'),
                   ),
                   const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const RegisterScreen()),
-                      );
-                    },
-                    child: const Text('¿No tienes cuenta? Regístrate'),
+                  Semantics(
+                    label: 'Regístrate',
+                    identifier: 'Regístrate',
+                    button: true,
+                    enabled: true,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                        );
+                      },
+                      child: const Text('¿No tienes cuenta? Regístrate'),
+                    ),
                   ),
                 ],
               ),

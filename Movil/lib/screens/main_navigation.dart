@@ -34,25 +34,49 @@ class _MainNavigationState extends State<MainNavigation> {
         currentIndex: _currentIndex,
         onTap: _onTabTapped,
         type: BottomNavigationBarType.fixed,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            key: Key('nav_home'),
-            icon: Icon(Icons.home),
+            key: const Key('nav_home'),
+            icon: Semantics(
+              label: 'nav_home',
+              identifier: 'nav_home',
+              button: true,
+              enabled: true,
+              child: const Icon(Icons.home),
+            ),
             label: 'Inicio',
           ),
           BottomNavigationBarItem(
-            key: Key('nav_services'),
-            icon: Icon(Icons.search),
+            key: const Key('nav_services'),
+            icon: Semantics(
+              label: 'nav_services',
+              identifier: 'nav_services',
+              button: true,
+              enabled: true,
+              child: const Icon(Icons.search),
+            ),
             label: 'Servicios',
           ),
           BottomNavigationBarItem(
-            key: Key('nav_chat'),
-            icon: Icon(Icons.chat),
+            key: const Key('nav_chat'),
+            icon: Semantics(
+              label: 'nav_chat',
+              identifier: 'nav_chat',
+              button: true,
+              enabled: true,
+              child: const Icon(Icons.chat),
+            ),
             label: 'Chat',
           ),
           BottomNavigationBarItem(
-            key: Key('nav_profile'),
-            icon: Icon(Icons.person),
+            key: const Key('nav_profile'),
+            icon: Semantics(
+              label: 'nav_profile',
+              identifier: 'nav_profile',
+              button: true,
+              enabled: true,
+              child: const Icon(Icons.person),
+            ),
             label: 'Perfil',
           ),
         ],
