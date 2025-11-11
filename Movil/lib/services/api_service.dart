@@ -58,11 +58,18 @@ class ApiService {
     Map<String, dynamic> body,
   ) async {
     final url = Uri.parse('${AppConstants.apiBaseUrl}$endpoint');
+    print('🌐 POST $url');
+    print('📤 Body: ${jsonEncode(body)}');
+    
     final response = await _client.post(
       url,
       headers: _headers,
       body: jsonEncode(body),
     );
+    
+    print('📥 Status: ${response.statusCode}');
+    print('📥 Response: ${response.body}');
+    
     return _handleResponse(response);
   }
 
@@ -89,13 +96,30 @@ class ApiService {
 
   /// Manejo centralizado de respuestas
   Map<String, dynamic> _handleResponse(http.Response response) {
-    final body = jsonDecode(response.body) as Map<String, dynamic>;
+    // Intentar decodificar el JSON
+    dynamic body;
+    try {
+      body = jsonDecode(response.body);
+    } catch (e) {
+      throw ApiException(
+        message: 'Respuesta inválida del servidor: ${response.body}',
+        statusCode: response.statusCode,
+      );
+    }
+
+    // Verificar que sea un Map
+    if (body is! Map<String, dynamic>) {
+      throw ApiException(
+        message: 'Formato de respuesta inesperado del servidor',
+        statusCode: response.statusCode,
+      );
+    }
     
     if (response.statusCode >= 200 && response.statusCode < 300) {
       return body;
     } else {
       throw ApiException(
-        message: body['message'] ?? 'Error desconocido',
+        message: body['message'] as String? ?? 'Error desconocido',
         statusCode: response.statusCode,
       );
     }

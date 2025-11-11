@@ -13,7 +13,7 @@ exports.register = asyncHandler(async (req, res) => {
   const passwordHash = await hashPassword(password);
   const user = await User.create({ name, email, passwordHash, role });
   const token = signToken({ id: user._id, role: user.role });
-  res.status(201).json({ token, user: { id: user._id, name: user.name, role: user.role } });
+  res.status(201).json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
 });
 
 exports.login = asyncHandler(async (req, res) => {
@@ -23,7 +23,7 @@ exports.login = asyncHandler(async (req, res) => {
   const valid = await comparePassword(password, user.passwordHash);
   if (!valid) return res.status(401).json({ message: 'Credenciales inválidas' });
   const token = signToken({ id: user._id, role: user.role });
-  res.json({ token, user: { id: user._id, name: user.name, role: user.role } });
+  res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
 });
 
 exports.me = asyncHandler(async (req, res) => {

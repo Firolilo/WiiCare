@@ -1,14 +1,24 @@
 # WiiCare Móvil - Flutter
 
-Aplicación móvil de WiiCare para Android e iOS. Permite que usuarios y cuidadores se registren, publiquen servicios, busquen cuidadores y se comuniquen mediante chat.
+Aplicación móvil de WiiCare para Android e iOS. Permite que usuarios y cuidadores se registren, publiquen servicios, busquen cuidadores, se comuniquen mediante chat y realicen videollamadas.
 
-## 📋 Requisitos Previos
+## ✨ Características
+
+- � **Autenticación** - Login/Registro con JWT
+- 👤 **Perfiles** - Usuarios y Cuidadores
+- 🔍 **Búsqueda** - Encuentra servicios de cuidado
+- 💬 **Chat** - Mensajería en tiempo real
+- 📹 **Videollamadas** - Comunicación por video (Agora.io)
+- 🧪 **Testing Completo** - Unit, Widget, Integration y E2E tests
+
+## �📋 Requisitos Previos
 
 - **Flutter SDK**: 3.0.0 o superior ([Instalación](https://docs.flutter.dev/get-started/install))
 - **Dart**: 3.0.0 o superior (incluido con Flutter)
 - **Android Studio** o **Xcode** (según la plataforma objetivo)
 - **Dispositivo/Emulador**: Android 5.0+ o iOS 12+
 - **Backend WiiCare** corriendo en `http://localhost:4000` (ver `/Backend`)
+- **Cuenta Agora.io** (para videollamadas) - [Crear cuenta gratis](https://www.agora.io/)
 
 ## 🚀 Instalación y Configuración
 
@@ -28,25 +38,33 @@ Los modelos usan `json_serializable`. Genera los archivos `.g.dart`:
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
-### 3. Configurar Variables de Entorno
+### 3. Configurar URL del Backend
 
-Copia `.env.example` a `.env` y ajusta la URL de tu API:
+Edita `lib/utils/constants.dart` y ajusta la IP según tu caso:
 
-```bash
-cp .env.example .env
+```dart
+static const String apiBaseUrl = String.fromEnvironment(
+  'API_BASE_URL',
+  defaultValue: 'http://192.168.0.27:4000/api', // Tu IP local
+);
 ```
 
-Edita `.env`:
+**Opciones:**
+- Android Emulator: `http://10.0.2.2:4000/api`
+- Dispositivo físico: `http://TU_IP_LOCAL:4000/api` (ej: `http://192.168.0.27:4000/api`)
+- iOS Simulator: `http://localhost:4000/api`
 
-```env
-# Para Android Emulator:
-API_BASE_URL=http://10.0.2.2:4000/api
+### 4. Configurar Videollamadas (Opcional)
 
-# Para dispositivo físico (reemplaza con tu IP local):
-# API_BASE_URL=http://192.168.1.XXX:4000/api
-```
+Ver guía completa en: **[VIDEO_CALLS_SETUP.md](./VIDEO_CALLS_SETUP.md)**
 
-**Nota**: `10.0.2.2` es la IP del host desde el emulador de Android. Para iOS Simulator usa `localhost` o tu IP local.
+1. Crea cuenta en [Agora.io](https://www.agora.io/)
+2. Obtén tu App ID
+3. Edita `lib/services/video_call_service.dart`:
+   ```dart
+   static const String appId = 'TU_AGORA_APP_ID';
+   ```
+
 
 ### 4. Ejecutar la Aplicación
 
@@ -179,33 +197,67 @@ appium driver install xcuitest      # Para iOS
 ```
 
 #### Ejecutar Pruebas Appium
+## 🧪 Testing
 
-1. Inicia Appium:
+La app incluye **4 niveles de pruebas** para garantizar calidad. Ver guía completa: **[TESTING_GUIDE.md](./TESTING_GUIDE.md)**
 
-```bash
-appium
-```
-
-2. Compila la app en modo debug:
+### 🚀 Quick Start - Ejecutar Todas las Pruebas
 
 ```bash
-flutter build apk --debug  # Android
-```
+# 1. Unit tests y Widget tests (rápido, sin dispositivo)
+flutter test
 
-3. Ejecuta las pruebas (desde `appium/`):
+# 2. Integration tests (requiere dispositivo/emulador)
+flutter test integration_test/app_test.dart
 
-```bash
+# 3. Flutter Driver E2E tests
+flutter drive --target=test_driver/app.dart --driver=test_driver/app_test.dart
+
+# 4. Appium tests (requiere servidor Appium corriendo)
 cd appium
 npm install
-npm test
+appium &  # Terminal 1
+npm test  # Terminal 2
 ```
 
-#### Scripts Appium Disponibles
+### 📋 Tests Implementados
 
-- `npm test` - Ejecuta todas las pruebas
-- `npm run test:login` - Prueba de login
-- `npm run test:register` - Prueba de registro
-- `npm run test:services` - Prueba de búsqueda de servicios
+✅ **Unit Tests** (`test/`)
+- Lógica de negocio
+- Servicios API
+- Modelos de datos
+
+✅ **Integration Tests** (`integration_test/`)
+- US1: Registro de cuidador completo
+- US2: Búsqueda y filtrado de servicios
+- US3: Login y envío de mensajes
+- Validaciones de formularios
+
+✅ **Flutter Driver Tests** (`test_driver/`)
+- Flujos completos de usuario
+- Tests de performance
+- Navegación entre pantallas
+
+✅ **Appium Tests** (`appium/`)
+- Automatización avanzada
+- Screenshots automáticos
+- Reportes HTML
+
+### 📊 Ver Cobertura de Código
+
+```bash
+# Generar reporte de cobertura
+flutter test --coverage
+
+# Convertir a HTML (requiere lcov)
+genhtml coverage/lcov.info -o coverage/html
+
+# Abrir en navegador
+start coverage/html/index.html  # Windows
+open coverage/html/index.html   # macOS
+```
+
+---
 
 ## 📊 Reporte de Pruebas QA
 
@@ -213,9 +265,11 @@ Los reportes de pruebas se generan en:
 
 - **Flutter Test**: `coverage/lcov.info`
 - **Integration Test**: Logs en consola
-- **Appium**: `appium/reports/test_report.json`
+- **Appium**: `appium/screenshots/` y reportes HTML
 
-Ver [`test_report.md`](./test_report.md) para evidencias y capturas.
+Ver [`test_report.md`](./test_report.md) para evidencias y capturas de pantalla.
+
+---
 
 ## 🔧 Comandos Útiles
 
@@ -224,6 +278,9 @@ Ver [`test_report.md`](./test_report.md) para evidencias y capturas.
 ```bash
 # Hot reload automático
 flutter run
+
+# Hot reload con logs verbosos
+flutter run -v
 
 # Limpiar build cache
 flutter clean
