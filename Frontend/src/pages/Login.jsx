@@ -1,31 +1,113 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
-export default function Login() {
-  const { login } = useAuth();
+export default function AuthForm() {
+  const { login, register } = useAuth();
+  const navigate = useNavigate();
+  const [isRegister, setIsRegister] = useState(false);
+  const [name, setName] = useState('');
+  const [role, setRole] = useState('user');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    if (!email || !password || (isRegister && !name)) {
+      setError('Por favor completa todos los campos requeridos.');
+      return;
+    }
+
     try {
-      await login(email, password);
+      setLoading(true);
+      if (isRegister) await register(name, email, password, role);
+      else await login(email, password);
+      navigate('/');
     } catch (e) {
-      setError(e.message || 'Error iniciando sesión');
+      const msg =
+        e.response?.data?.message ||
+        (e.message?.includes('Network') && 'Error de conexión con el servidor.') ||
+        (e.message?.includes('409') && 'El correo ya está registrado.') ||
+        (e.message?.includes('401') && 'Credenciales incorrectas.') ||
+        'Error en la autenticación.';
+      setError(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <section className="max-w-md mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Iniciar sesión</h1>
-      <form onSubmit={onSubmit} className="space-y-3">
-        <input className="w-full border p-2 rounded" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input className="w-full border p-2 rounded" type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} />
-        {error && <p className="text-red-600">{error}</p>}
-        <button className="bg-blue-600 text-white px-4 py-2 rounded">Entrar</button>
-      </form>
+    <section className="min-h-[80vh] flex items-center justify-center">
+      <div className="bg-white shadow-md border border-[#E0D7C6] rounded-xl p-8 w-full max-w-md">
+        <h1 className="text-2xl font-bold text-[#2B4C7E] mb-6 text-center">
+          {isRegister ? 'Registrar usuario' : 'Iniciar sesión'}
+        </h1>
+
+        <form onSubmit={onSubmit} className="space-y-4">
+          {isRegister && (
+            <>
+              <input
+                className="w-full border border-[#D8CFC4] focus:border-[#3A6EA5] p-2 rounded-lg outline-none transition"
+                placeholder="Nombre"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+              <select
+                className="w-full border border-[#D8CFC4] focus:border-[#3A6EA5] p-2 rounded-lg outline-none transition"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+              >
+                <option value="user">Usuario</option>
+                <option value="caregiver">Cuidador</option>
+              </select>
+            </>
+          )}
+
+          <input
+            className="w-full border border-[#D8CFC4] focus:border-[#3A6EA5] p-2 rounded-lg outline-none transition"
+            placeholder="Correo electrónico"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+
+          <input
+            className="w-full border border-[#D8CFC4] focus:border-[#3A6EA5] p-2 rounded-lg outline-none transition"
+            type="password"
+            placeholder="Contraseña"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          {error && (
+            <p className="text-red-600 text-sm text-center bg-red-50 p-2 rounded-lg">
+              {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-[#3A6EA5] hover:bg-[#2B4C7E] text-white px-4 py-2 rounded-lg w-full transition-all shadow-sm disabled:bg-[#8FAFD3]"
+          >
+            {loading ? 'Procesando...' : isRegister ? 'Registrar' : 'Entrar'}
+          </button>
+        </form>
+
+        <p className="text-center mt-4 text-sm text-[#5A5A5A]">
+          {isRegister ? '¿Ya tienes cuenta?' : '¿No tienes cuenta?'}{' '}
+          <button
+            type="button"
+            className="text-[#2B4C7E] hover:underline"
+            onClick={() => setIsRegister(!isRegister)}
+          >
+            {isRegister ? 'Inicia sesión' : 'Regístrate'}
+          </button>
+        </p>
+      </div>
     </section>
   );
 }

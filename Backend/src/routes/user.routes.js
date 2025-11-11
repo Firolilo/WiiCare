@@ -6,7 +6,7 @@ const { auth } = require('../middleware/auth');
 const router = express.Router();
 
 router.get('/caregivers', listCaregivers);
-router.get('/:id', getProfile);
+router.get('/:id', getProfile); 
 router.put('/me', auth(true), updateProfile);
 
 module.exports = router;

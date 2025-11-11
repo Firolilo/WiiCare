@@ -6,23 +6,49 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api.get('/services').then((res) => setServices(res.data.services || [])).finally(() => setLoading(false));
+    api
+      .get('/services')
+      .then((res) => setServices(res.data.services || []))
+      .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p>Cargando...</p>;
+  if (loading)
+    return (
+      <section className="flex justify-center items-center min-h-[calc(95vh-80px)] text-[#2B4C7E]">
+        <p className="text-lg font-medium animate-pulse">Cargando servicios...</p>
+      </section>
+    );
 
   return (
-    <section>
-      <h1 className="text-2xl font-bold mb-4">Servicios disponibles</h1>
-      <ul className="grid md:grid-cols-2 gap-4">
-        {services.map((s) => (
-          <li key={s._id} className="border rounded p-4 bg-white">
-            <h3 className="font-semibold">{s.title}</h3>
-            <p className="text-sm text-gray-700">{s.description}</p>
-            <p className="text-sm mt-1">Tarifa: {s.rate} €/h</p>
-          </li>
-        ))}
-      </ul>
+    <section className="min-h-[calc(95vh-80px)] flex flex-col items-center justify-start text-center px-6 py-10 bg-gradient-to-b from-white to-[#f5f0e8]">
+      <div className="max-w-4xl w-full">
+        <h1 className="text-3xl font-bold text-[#2B4C7E] mb-6">
+          Servicios disponibles
+        </h1>
+
+        {services.length === 0 ? (
+          <p className="text-gray-600 text-lg">No hay servicios registrados.</p>
+        ) : (
+          <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {services.map((s) => (
+              <li
+                key={s._id}
+                className="bg-white rounded-2xl shadow-sm border border-[#e6e0d2] p-5 text-left hover:shadow-md transition"
+              >
+                <h3 className="font-semibold text-lg text-[#2B4C7E] mb-2">
+                  {s.title}
+                </h3>
+                <p className="text-sm text-gray-700 line-clamp-3">
+                  {s.description}
+                </p>
+                <p className="text-sm mt-3 text-gray-600">
+                  Tarifa: <span className="font-medium">{s.rate} Bs/h</span>
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </section>
   );
 }
