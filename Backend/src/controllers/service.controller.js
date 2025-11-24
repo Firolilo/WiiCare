@@ -21,12 +21,12 @@ exports.listServices = asyncHandler(async (req, res) => {
   if (query) filter.$text = { $search: query };
   if (tag) filter.tags = tag;
   if (location) filter.location = location;
-  const services = await Service.find(filter).populate('caregiver', 'name rating location');
+  const services = await Service.find(filter).populate('caregiver', 'name email rating location');
   res.json({ services });
 });
 
 exports.getService = asyncHandler(async (req, res) => {
-  const service = await Service.findById(req.params.id).populate('caregiver', 'name rating');
+  const service = await Service.findById(req.params.id).populate('caregiver', 'name email rating location');
   if (!service) return res.status(404).json({ message: 'Servicio no encontrado' });
   res.json({ service });
 });

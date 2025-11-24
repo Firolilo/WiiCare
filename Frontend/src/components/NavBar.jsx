@@ -30,6 +30,14 @@ export default function NavBar() {
               >
                 Dashboard
               </Link>
+              {user.role === 'caregiver' && (
+                <Link
+                  to="/crear-servicio"
+                  className="text-[#2B4C7E] hover:text-[#3A6EA5]"
+                >
+                  Crear Servicio
+                </Link>
+              )}
               <Link
                 to={`/perfil/${user._id}`}
                 className="text-[#2B4C7E] hover:text-[#3A6EA5]"

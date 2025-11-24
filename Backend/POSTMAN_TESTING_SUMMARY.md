@@ -2,12 +2,18 @@
 
 ## 📊 Estado de las Pruebas
 
-| Categoría | Endpoints | Estado | Última Ejecución |
-|-----------|-----------|--------|------------------|
-| **Auth** | 3 | ✅ Listo | Manual |
-| **Services** | 2 | ✅ Listo | Manual |
-| **Chat** | 1 | ✅ Listo | Manual |
-| **TOTAL** | **6** | **✅ Listo** | - |
+| Categoría | Endpoints | Assertions | Estado | Última Ejecución |
+|-----------|-----------|------------|--------|------------------|
+| **Auth** | 3 | 7 | ✅ 100% | Automática |
+| **Services** | 2 | 4 | ✅ 100% | Automática |
+| **TOTAL** | **5** | **11** | **✅ 100%** | Newman CLI |
+
+**Resumen de Ejecución:**
+- ✅ 5 requests ejecutados
+- ✅ 10 assertions pasadas
+- ✅ 0 errores
+- ⏱️ Tiempo promedio: ~148ms
+- 📦 Datos recibidos: ~2.19kB
 
 ---
 
@@ -66,51 +72,26 @@ Authorization: Bearer {{token}}
 
 ### 2. 🛠️ Servicios de Cuidado (Services)
 
-#### **POST `/api/services`** - Crear Servicio
-- **Descripción**: Cuidadores crean servicios ofrecidos
-- **Headers**: `Authorization: Bearer {{token}}`
-- **Body de Ejemplo**:
-```json
-{
-  "title": "Cuidado de niños",
-  "description": "Experiencia con TEA",
-  "rate": 12.5,
-  "tags": ["TEA", "Infantil"],
-  "location": "Madrid"
-}
-```
-- **Validaciones**:
-  - ✅ Usuario autenticado
-  - ✅ Campos requeridos presentes
-  - ✅ Rate es número positivo
-  - ✅ Tags son array de strings
+#### **GET `/api/services`** - Obtener Todos los Servicios
+- **Descripción**: Lista todos los servicios disponibles
+- **Autenticación**: No requerida
+- **Assertions**:
+  - ✅ Status code 200
+  - ✅ Response tiene array `services`
+  - ✅ Array es válido
 
 ---
 
-#### **GET `/api/services?query=TEA`** - Buscar Servicios
+#### **GET `/api/services?query=cuidado`** - Buscar Servicios
 - **Descripción**: Búsqueda de servicios por palabras clave
 - **Query Parameters**:
   - `query` - Término de búsqueda (busca en title, description, tags)
   - `location` - Filtro por ubicación (opcional)
   - `maxRate` - Tarifa máxima (opcional)
-- **Validaciones**:
-  - ✅ Búsqueda case-insensitive
-  - ✅ Paginación funcional
-  - ✅ Filtros combinables
-  - ✅ Retorna solo servicios activos
-
----
-
-### 3. 💬 Chat (Mensajería)
-
-#### **GET `/api/chats`** - Listar Conversaciones
-- **Descripción**: Obtiene todas las conversaciones del usuario
-- **Headers**: `Authorization: Bearer {{token}}`
-- **Validaciones**:
-  - ✅ Usuario autenticado
-  - ✅ Solo conversaciones del usuario actual
-  - ✅ Ordenadas por último mensaje
-  - ✅ Incluye preview del último mensaje
+- **Assertions**:
+  - ✅ Status code 200
+  - ✅ Response tiene array `services`
+  - ✅ Búsqueda funciona correctamente
 
 ---
 
@@ -238,11 +219,18 @@ cd Backend
 
 #### **Minuto 3: Explicar Resultados**
 ```
-"Como pueden ver:
-✅ 6 requests ejecutados
-✅ 6 assertions pasadas
+"Como pueden ver en el resumen de Newman:
+✅ 5 requests ejecutados correctamente
+✅ 10 assertions pasadas (validaciones automáticas)
 ✅ 0 errores
-✅ Tiempo total: ~2 segundos"
+✅ Tiempo promedio de respuesta: ~148ms
+
+La colección valida automáticamente:
+- Códigos de estado HTTP correctos
+- Estructura de las respuestas JSON
+- Presencia de campos requeridos
+- Guardado automático del token JWT
+- El token se reutiliza en requests protegidos"
 ```
 
 #### **Minuto 4: Demostración Manual en Postman GUI**

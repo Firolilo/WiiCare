@@ -4,6 +4,8 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Profile from './pages/Profile';
 import Caregivers from './pages/Caregivers';
+import CreateService from './pages/CreateService';
+import Chat from './pages/Chat';
 import NavBar from './components/NavBar';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -28,6 +30,22 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <Dashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/crear-servicio"
+                element={
+                  <ProtectedRoute>
+                    <CreateService />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/chat/:caregiverId"
+                element={
+                  <ProtectedRoute>
+                    <Chat />
                   </ProtectedRoute>
                 }
               />

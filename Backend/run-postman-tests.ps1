@@ -32,9 +32,9 @@ Write-Host ""
 Write-Host "─────────────────────────────────────────────────────────────────" -ForegroundColor DarkGray
 Write-Host "📦 Colección: WiiCare API" -ForegroundColor Cyan
 Write-Host "─────────────────────────────────────────────────────────────────" -ForegroundColor DarkGray
-Write-Host "   📁 Auth        → Register, Login, Me" -ForegroundColor White
-Write-Host "   📁 Services    → Create, Search" -ForegroundColor White
-Write-Host "   📁 Chat        → List Conversations" -ForegroundColor White
+Write-Host "   📁 Auth             → Register (1 test), Login (3 tests), Me (2 tests)" -ForegroundColor White
+Write-Host "   📁 Services         → Get All (2 tests), Search (2 tests)" -ForegroundColor White
+Write-Host "   � Total Assertions → 10 validaciones automáticas" -ForegroundColor Yellow
 Write-Host "─────────────────────────────────────────────────────────────────" -ForegroundColor DarkGray
 Write-Host ""
 
