@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 export default function AuthForm() {
-  const { login, register } = useAuth();
+  const { login, register, user } = useAuth();
   const navigate = useNavigate();
   const [isRegister, setIsRegister] = useState(false);
   const [name, setName] = useState('');
@@ -12,6 +12,20 @@ export default function AuthForm() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Redirigir si ya está autenticado
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
+
+  // Redirigir si ya está autenticado
+  useEffect(() => {
+    if (user) {
+      navigate('/');
+    }
+  }, [user, navigate]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -40,8 +54,13 @@ export default function AuthForm() {
     }
   };
 
+  // No mostrar el formulario si ya está autenticado
+  if (user) {
+    return null;
+  }
+
   return (
-    <section className="min-h-[80vh] flex items-center justify-center">
+    <section className="min-h-[80vh] flex items-center justify-center px-6 py-10">
       <div className="bg-white shadow-md border border-[#E0D7C6] rounded-xl p-8 w-full max-w-md">
         <h1 className="text-2xl font-bold text-[#2B4C7E] mb-6 text-center">
           {isRegister ? 'Registrar usuario' : 'Iniciar sesión'}

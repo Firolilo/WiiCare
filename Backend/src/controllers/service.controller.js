@@ -16,11 +16,12 @@ exports.createService = asyncHandler(async (req, res) => {
 });
 
 exports.listServices = asyncHandler(async (req, res) => {
-  const { query, tag, location } = req.query;
+  const { query, tag, location, caregiver } = req.query;
   const filter = {};
   if (query) filter.$text = { $search: query };
   if (tag) filter.tags = tag;
   if (location) filter.location = location;
+  if (caregiver) filter.caregiver = caregiver;
   const services = await Service.find(filter).populate('caregiver', 'name email rating location');
   res.json({ services });
 });

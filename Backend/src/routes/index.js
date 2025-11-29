@@ -10,6 +10,6 @@ const router = express.Router();
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
 router.use('/services', serviceRoutes);
-router.use('/chats', chatRoutes);
+router.use('/chat', chatRoutes);
 
 module.exports = router;

@@ -15,6 +15,15 @@ export default function Chat() {
   const [sending, setSending] = useState(false);
   const messagesEndRef = useRef(null);
 
+  // Validar que caregiverId existe
+  useEffect(() => {
+    if (!caregiverId || caregiverId === 'undefined') {
+      console.error('ID de cuidador inválido');
+      navigate('/dashboard');
+      return;
+    }
+  }, [caregiverId, navigate]);
+
   // Scroll automático al final
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -25,6 +34,8 @@ export default function Chat() {
   }, [messages]);
 
   useEffect(() => {
+    if (!caregiverId || caregiverId === 'undefined') return;
+    
     // Cargar datos del cuidador
     const loadCaregiverData = async () => {
       try {

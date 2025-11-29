@@ -1,25 +1,42 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import api from '../api/client';
 
 export default function Profile() {
   const { id } = useParams();
+  const { user: currentUser } = useAuth();
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ name: '', bio: '', location: '' });
   const [loading, setLoading] = useState(true);
 
+  // Si no hay ID en la URL, usar el ID del usuario autenticado
+  const userId = id || currentUser?._id;
+
   useEffect(() => {
-    api.get(`/users/${id}`).then((res) => {
-      setUser(res.data.user);
-      setForm({
-        name: res.data.user.name || '',
-        bio: res.data.user.bio || '',
-        location: res.data.user.location || '',
+    if (!userId) {
+      console.error('No user ID available');
+      navigate('/dashboard');
+      return;
+    }
+
+    api.get(`/users/${userId}`)
+      .then((res) => {
+        setUser(res.data.user);
+        setForm({
+          name: res.data.user.name || '',
+          bio: res.data.user.bio || '',
+          location: res.data.user.location || '',
+        });
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error('Error al cargar perfil:', error);
+        setLoading(false);
       });
-      setLoading(false);
-    });
-  }, [id]);
+  }, [userId, navigate]);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -43,7 +60,7 @@ export default function Profile() {
     );
 
   return (
-    <section className="min-h-[calc(100vh-80px)] bg-gradient-to-b from-white to-[#f5f0e8] flex flex-col items-center justify-start px-6 py-10">
+    <section className="min-h-full bg-gradient-to-b from-white to-[#f5f0e8] flex flex-col items-center justify-start px-6 py-10">
       <div className="max-w-md w-full bg-white shadow-sm border border-[#e6e0d2] rounded-2xl p-6">
         <h1 className="text-2xl font-bold text-[#2B4C7E] mb-4 text-center">Perfil de usuario</h1>
 
