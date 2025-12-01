@@ -1,59 +1,69 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/chat_provider.dart';
+import '../providers/auth_provider.dart';
+import 'conversation_screen.dart';
 import 'video_call_screen.dart';
+import 'package:intl/intl.dart';
 
-/// Pantalla de chat
-class ChatScreen extends StatelessWidget {
+/// Pantalla de chat - Lista de conversaciones
+class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
 
-  void _startVideoCall(BuildContext context, String userName, String userId) {
-    // Generar un nombre de canal único basado en los IDs de usuario
-    final channelName = 'wiicare_call_$userId';
+  @override
+  State<ChatScreen> createState() => _ChatScreenState();
+}
+
+class _ChatScreenState extends State<ChatScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _initializeChat();
+  }
+
+  Future<void> _initializeChat() async {
+    final authProvider = context.read<AuthProvider>();
+    final chatProvider = context.read<ChatProvider>();
     
-    // TODO: En producción, obtener el token de Agora desde el backend
-    const token = ''; // Dejar vacío para desarrollo sin autenticación
+    if (authProvider.token != null) {
+      await chatProvider.initialize(authProvider.token!);
+    }
+  }
+
+  void _startVideoCall(BuildContext context, String userId, String conversationId, String userName) {
+    final chatProvider = context.read<ChatProvider>();
+    final authProvider = context.read<AuthProvider>();
     
+    chatProvider.startVideoCall(userId, conversationId, authProvider.user?.name ?? 'Usuario');
+    
+    // Navegar a pantalla de videollamada
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => VideoCallScreen(
-          channelName: channelName,
-          token: token,
-          userId: int.parse(userId.hashCode.toString().substring(0, 8)),
-          userName: userName,
+          conversationId: conversationId,
+          userName: authProvider.user?.name ?? 'Usuario',
+          otherUserName: userName,
         ),
       ),
     );
   }
 
+  String _formatTime(DateTime? dateTime) {
+    if (dateTime == null) return '';
+    
+    final now = DateTime.now();
+    final difference = now.difference(dateTime);
+    
+    if (difference.inMinutes < 1) return 'Ahora';
+    if (difference.inMinutes < 60) return '${difference.inMinutes}m';
+    if (difference.inHours < 24) return '${difference.inHours}h';
+    if (difference.inDays < 7) return '${difference.inDays}d';
+    
+    return DateFormat('dd/MM').format(dateTime);
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Lista de ejemplo de conversaciones
-    final conversations = [
-      {
-        'id': '1',
-        'name': 'María García',
-        'lastMessage': 'Hola, ¿cuándo podemos empezar?',
-        'time': '10:30',
-        'unread': 2,
-        'isOnline': true,
-      },
-      {
-        'id': '2',
-        'name': 'Juan Pérez',
-        'lastMessage': 'Gracias por tu ayuda',
-        'time': 'Ayer',
-        'unread': 0,
-        'isOnline': false,
-      },
-      {
-        'id': '3',
-        'name': 'Ana Rodríguez',
-        'lastMessage': '¿Disponible mañana?',
-        'time': '2 días',
-        'unread': 1,
-        'isOnline': true,
-      },
-    ];
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chats'),
@@ -66,8 +76,37 @@ class ChatScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: conversations.isEmpty
-          ? const Center(
+      body: Consumer<ChatProvider>(
+        builder: (context, chatProvider, child) {
+          if (chatProvider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (chatProvider.error != null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 80, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Error: ${chatProvider.error}',
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _initializeChat,
+                    child: const Text('Reintentar'),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          final conversations = chatProvider.conversations;
+
+          if (conversations.isEmpty) {
+            return const Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -79,23 +118,31 @@ class ChatScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            )
-          : ListView.builder(
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: () => chatProvider.loadConversations(),
+            child: ListView.builder(
               itemCount: conversations.length,
               itemBuilder: (context, index) {
-                final chat = conversations[index];
+                final conversation = conversations[index];
+                final otherUser = conversation.otherParticipant;
+                final isOnline = otherUser != null && 
+                    chatProvider.isUserOnline(otherUser.id);
+
                 return ListTile(
-                  key: Key('chat_item_${chat['id']}'),
+                  key: Key('chat_item_${conversation.id}'),
                   leading: Stack(
                     children: [
                       CircleAvatar(
-                        backgroundColor: Colors.blue,
+                        backgroundColor: Theme.of(context).primaryColor,
                         child: Text(
-                          chat['name'].toString()[0].toUpperCase(),
+                          otherUser?.initials ?? 'U',
                           style: const TextStyle(color: Colors.white),
                         ),
                       ),
-                      if (chat['isOnline'] == true)
+                      if (isOnline)
                         Positioned(
                           right: 0,
                           bottom: 0,
@@ -112,11 +159,11 @@ class ChatScreen extends StatelessWidget {
                     ],
                   ),
                   title: Text(
-                    chat['name'].toString(),
+                    otherUser?.name ?? 'Usuario',
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
-                    chat['lastMessage'].toString(),
+                    conversation.lastMessage ?? 'Sin mensajes',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -125,15 +172,15 @@ class ChatScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Text(
-                        chat['time'].toString(),
+                        _formatTime(conversation.lastMessageAt),
                         style: TextStyle(
                           fontSize: 12,
-                          color: chat['unread'] != 0
+                          color: conversation.unreadCount > 0
                               ? Theme.of(context).primaryColor
                               : Colors.grey,
                         ),
                       ),
-                      if (chat['unread'] != 0) ...[
+                      if (conversation.unreadCount > 0) ...[
                         const SizedBox(height: 4),
                         Container(
                           padding: const EdgeInsets.all(6),
@@ -142,7 +189,7 @@ class ChatScreen extends StatelessWidget {
                             shape: BoxShape.circle,
                           ),
                           child: Text(
-                            chat['unread'].toString(),
+                            conversation.unreadCount.toString(),
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 10,
@@ -154,16 +201,27 @@ class ChatScreen extends StatelessWidget {
                     ],
                   ),
                   onTap: () {
-                    // TODO: Navegar a la pantalla de conversación individual
-                    _showChatOptions(context, chat);
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ConversationScreen(
+                          conversation: conversation,
+                        ),
+                      ),
+                    );
+                  },
+                  onLongPress: () {
+                    _showChatOptions(context, conversation, otherUser?.name ?? 'Usuario', otherUser?.id);
                   },
                 );
               },
             ),
+          );
+        },
+      ),
     );
   }
 
-  void _showChatOptions(BuildContext context, Map<String, dynamic> chat) {
+  void _showChatOptions(BuildContext context, dynamic conversation, String userName, String? userId) {
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(
@@ -176,43 +234,27 @@ class ChatScreen extends StatelessWidget {
               title: const Text('Ver conversación'),
               onTap: () {
                 Navigator.pop(context);
-                // TODO: Navegar a la conversación
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Funcionalidad de chat en desarrollo'),
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => ConversationScreen(
+                      conversation: conversation,
+                    ),
                   ),
                 );
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.videocam),
-              title: const Text('Iniciar videollamada'),
-              onTap: () {
-                Navigator.pop(context);
-                _startVideoCall(
-                  context,
-                  chat['name'].toString(),
-                  chat['id'].toString(),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.phone),
-              title: const Text('Llamada de voz'),
-              onTap: () {
-                Navigator.pop(context);
-                // TODO: Implementar llamada de voz
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Funcionalidad de llamada de voz en desarrollo'),
-                  ),
-                );
-              },
-            ),
+            if (userId != null)
+              ListTile(
+                leading: const Icon(Icons.videocam),
+                title: const Text('Iniciar videollamada'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _startVideoCall(context, userId, conversation.id, userName);
+                },
+              ),
           ],
         ),
       ),
     );
   }
 }
-

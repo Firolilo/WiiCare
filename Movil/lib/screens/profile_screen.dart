@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import 'login_screen.dart';
 
 /// Pantalla de perfil del usuario
 class ProfileScreen extends StatelessWidget {
@@ -28,7 +29,10 @@ class ProfileScreen extends StatelessWidget {
             onPressed: () async {
               await authProvider.logout();
               if (context.mounted) {
-                Navigator.of(context).pushReplacementNamed('/login');
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                  (route) => false,
+                );
               }
             },
           ),

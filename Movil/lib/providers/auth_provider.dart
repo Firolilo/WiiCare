@@ -7,12 +7,16 @@ class AuthProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
 
   User? get currentUser => _authService.currentUser;
+  User? get user => _authService.currentUser; // Alias para compatibilidad
   bool get isLoggedIn => _authService.isLoggedIn;
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
   String? _error;
   String? get error => _error;
+  
+  String? _token;
+  String? get token => _token;
 
   /// Cargar sesión al iniciar la app
   Future<bool> loadSession() async {
@@ -22,6 +26,9 @@ class AuthProvider with ChangeNotifier {
 
     try {
       final result = await _authService.loadSession();
+      if (result) {
+        _token = await _authService.getToken();
+      }
       return result;
     } catch (e) {
       _error = e.toString();
@@ -40,6 +47,7 @@ class AuthProvider with ChangeNotifier {
 
     try {
       await _authService.login(email: email, password: password);
+      _token = await _authService.getToken();
       return true;
     } catch (e) {
       _error = e.toString();
@@ -81,6 +89,7 @@ class AuthProvider with ChangeNotifier {
   /// Logout
   Future<void> logout() async {
     await _authService.logout();
+    _token = null;
     notifyListeners();
   }
 

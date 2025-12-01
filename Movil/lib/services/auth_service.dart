@@ -127,4 +127,11 @@ class AuthService {
 
   /// Check si hay sesión activa
   bool get isLoggedIn => _currentUser != null;
+  
+  /// Obtener token actual
+  Future<String?> getToken() async {
+    await _api.loadToken();
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(AppConstants.tokenKey);
+  }
 }

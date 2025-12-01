@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:agora_rtc_engine/agora_rtc_engine.dart';
-import '../services/video_call_service.dart';
+import 'package:jitsi_meet_flutter_sdk/jitsi_meet_flutter_sdk.dart';
 
-/// Pantalla de videollamada con Agora
+/// Pantalla de videollamada con Jitsi Meet
 class VideoCallScreen extends StatefulWidget {
-  final String channelName;
-  final String token;
-  final int userId;
+  final String conversationId;
   final String userName;
+  final String otherUserName;
 
   const VideoCallScreen({
     super.key,
-    required this.channelName,
-    required this.token,
-    required this.userId,
+    required this.conversationId,
     required this.userName,
+    required this.otherUserName,
   });
 
   @override
@@ -22,48 +19,91 @@ class VideoCallScreen extends StatefulWidget {
 }
 
 class _VideoCallScreenState extends State<VideoCallScreen> {
-  final VideoCallService _videoService = VideoCallService();
-  bool _isInitialized = false;
-  int? _remoteUid;
-  bool _isMuted = false;
-  bool _isCameraOff = false;
+  final _jitsiMeet = JitsiMeet();
+  bool _isJoining = true;
 
   @override
   void initState() {
     super.initState();
-    _initializeCall();
+    _joinCall();
   }
 
-  Future<void> _initializeCall() async {
+  Future<void> _joinCall() async {
     try {
-      await _videoService.initialize();
-      await _videoService.joinChannel(
-        channelName: widget.channelName,
-        token: widget.token,
-        uid: widget.userId,
+      // Generar nombre de sala único basado en conversationId
+      final roomName = 'wiicare-${widget.conversationId}';
+      
+      // Configurar opciones de Jitsi
+      var options = JitsiMeetConferenceOptions(
+        serverURL: "https://meet.jit.si",
+        room: roomName,
+        configOverrides: {
+          "startWithAudioMuted": false,
+          "startWithVideoMuted": false,
+          "subject": "WiiCare - Videollamada",
+        },
+        featureFlags: {
+          "unsaferoomwarning.enabled": false,
+          "prejoinpage.enabled": false, // Saltar pantalla de prejoin
+          "chat.enabled": true,
+          "meeting-name.enabled": true,
+          "recording.enabled": false,
+        },
+        userInfo: JitsiMeetUserInfo(
+          displayName: widget.userName,
+          email: "",
+        ),
       );
 
-      // Escuchar eventos de usuarios
-      _videoService.engine?.registerEventHandler(RtcEngineEventHandler(
-        onUserJoined: (RtcConnection connection, int remoteUid, int elapsed) {
+      // Registrar listeners de eventos
+      var listener = JitsiMeetEventListener(
+        conferenceJoined: (url) {
+          print("✅ Usuario unido a la conferencia");
           setState(() {
-            _remoteUid = remoteUid;
+            _isJoining = false;
           });
         },
-        onUserOffline: (RtcConnection connection, int remoteUid,
-            UserOfflineReasonType reason) {
-          setState(() {
-            _remoteUid = null;
-          });
+        conferenceTerminated: (url, error) {
+          print("📞 Conferencia terminada");
+          if (mounted) {
+            Navigator.of(context).pop();
+          }
         },
-      ));
+        conferenceWillJoin: (url) {
+          print("📞 Uniéndose a la conferencia...");
+        },
+        participantJoined: (email, name, role, participantId) {
+          print("🟢 Participante unido: $name");
+        },
+        participantLeft: (participantId) {
+          print("🔴 Participante salió");
+        },
+        audioMutedChanged: (muted) {
+          print("🎤 Audio ${muted ? 'silenciado' : 'activado'}");
+        },
+        videoMutedChanged: (muted) {
+          print("📹 Video ${muted ? 'desactivado' : 'activado'}");
+        },
+        endpointTextMessageReceived: (senderId, message) {
+          print("💬 Mensaje recibido: $message");
+        },
+        screenShareToggled: (participantId, sharing) {
+          print("🖥️ Compartir pantalla: $sharing");
+        },
+        readyToClose: () {
+          print("👋 Listo para cerrar");
+          if (mounted) {
+            Navigator.of(context).pop();
+          }
+        },
+      );
 
-      setState(() {
-        _isInitialized = true;
-      });
+      await _jitsiMeet.join(options, listener);
     } catch (e) {
-      print('Error al inicializar videollamada: $e');
-      _showErrorDialog('Error al iniciar la videollamada');
+      print('❌ Error al unirse a la videollamada: $e');
+      if (mounted) {
+        _showErrorDialog('Error al iniciar la videollamada: $e');
+      }
     }
   }
 
@@ -86,202 +126,43 @@ class _VideoCallScreenState extends State<VideoCallScreen> {
     );
   }
 
-  Future<void> _toggleMute() async {
-    await _videoService.toggleMute();
-    setState(() {
-      _isMuted = _videoService.isMuted;
-    });
-  }
-
-  Future<void> _toggleCamera() async {
-    await _videoService.toggleCamera();
-    setState(() {
-      _isCameraOff = _videoService.isCameraOff;
-    });
-  }
-
-  Future<void> _switchCamera() async {
-    await _videoService.switchCamera();
-  }
-
-  Future<void> _endCall() async {
-    await _videoService.leaveChannel();
-    if (mounted) {
-      Navigator.of(context).pop();
-    }
-  }
-
-  @override
-  void dispose() {
-    _videoService.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          // Video remoto (pantalla completa)
-          if (_remoteUid != null)
-            AgoraVideoView(
-              controller: VideoViewController.remote(
-                rtcEngine: _videoService.engine!,
-                canvas: VideoCanvas(uid: _remoteUid),
-                connection: RtcConnection(channelId: widget.channelName),
-              ),
-            )
-          else
-            Center(
+      body: _isJoining
+          ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const CircularProgressIndicator(color: Colors.white),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Conectando con ${widget.otherUserName}...',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                   const SizedBox(height: 16),
-                  Text(
-                    'Esperando a ${widget.userName}...',
-                    style: const TextStyle(color: Colors.white, fontSize: 18),
+                  const Text(
+                    'Por favor, espera un momento',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 14,
+                    ),
                   ),
                 ],
               ),
-            ),
-
-          // Video local (esquina superior derecha)
-          Positioned(
-            top: 50,
-            right: 16,
-            child: Container(
-              width: 120,
-              height: 160,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white, width: 2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: _isInitialized
-                    ? AgoraVideoView(
-                        controller: VideoViewController(
-                          rtcEngine: _videoService.engine!,
-                          canvas: const VideoCanvas(uid: 0),
-                        ),
-                      )
-                    : Container(color: Colors.grey[900]),
-              ),
-            ),
-          ),
-
-          // Información de la llamada
-          Positioned(
-            top: 60,
-            left: 16,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.videocam, color: Colors.white, size: 20),
-                  const SizedBox(width: 8),
-                  Text(
-                    widget.userName,
-                    style: const TextStyle(color: Colors.white, fontSize: 16),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          // Controles de la llamada
-          Positioned(
-            bottom: 40,
-            left: 0,
-            right: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                // Mute/Unmute
-                _ControlButton(
-                  icon: _isMuted ? Icons.mic_off : Icons.mic,
-                  label: _isMuted ? 'Activar' : 'Silenciar',
-                  backgroundColor:
-                      _isMuted ? Colors.red : Colors.white.withOpacity(0.3),
-                  onPressed: _toggleMute,
-                ),
-
-                // Cambiar cámara
-                _ControlButton(
-                  icon: Icons.flip_camera_ios,
-                  label: 'Cambiar',
-                  backgroundColor: Colors.white.withOpacity(0.3),
-                  onPressed: _switchCamera,
-                ),
-
-                // Apagar/Encender cámara
-                _ControlButton(
-                  icon: _isCameraOff ? Icons.videocam_off : Icons.videocam,
-                  label: _isCameraOff ? 'Encender' : 'Apagar',
-                  backgroundColor: _isCameraOff
-                      ? Colors.red
-                      : Colors.white.withOpacity(0.3),
-                  onPressed: _toggleCamera,
-                ),
-
-                // Terminar llamada
-                _ControlButton(
-                  icon: Icons.call_end,
-                  label: 'Terminar',
-                  backgroundColor: Colors.red,
-                  onPressed: _endCall,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+            )
+          : Container(), // Jitsi maneja su propia UI
     );
   }
-}
-
-class _ControlButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final Color backgroundColor;
-  final VoidCallback onPressed;
-
-  const _ControlButton({
-    required this.icon,
-    required this.label,
-    required this.backgroundColor,
-    required this.onPressed,
-  });
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            shape: BoxShape.circle,
-          ),
-          child: IconButton(
-            icon: Icon(icon, color: Colors.white, size: 28),
-            onPressed: onPressed,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: const TextStyle(color: Colors.white, fontSize: 12),
-        ),
-      ],
-    );
+  void dispose() {
+    _jitsiMeet.hangUp();
+    super.dispose();
   }
 }

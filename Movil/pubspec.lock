@@ -9,14 +9,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "85.0.0"
-  agora_rtc_engine:
-    dependency: "direct main"
-    description:
-      name: agora_rtc_engine
-      sha256: "6559294d18ce4445420e19dbdba10fb58cac955cd8f22dbceae26716e194d70e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "6.5.3"
   analyzer:
     dependency: transitive
     description:
@@ -415,14 +407,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
-  iris_method_channel:
-    dependency: transitive
+  jitsi_meet_flutter_sdk:
+    dependency: "direct main"
     description:
-      name: iris_method_channel
-      sha256: bfb5cfc6c6eae42da8cd1b35977a72d8b8881848a5dfc3d672e4760a907d11a0
+      name: jitsi_meet_flutter_sdk
+      sha256: "8d6fe8beb2f3a5663e642dd3ed61ff57afca4f7586995d18781096c005f87117"
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.4"
+    version: "10.3.0"
   js:
     dependency: transitive
     description:
@@ -804,6 +796,22 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  socket_io_client:
+    dependency: "direct main"
+    description:
+      name: socket_io_client
+      sha256: ede469f3e4c55e8528b4e023bdedbc20832e8811ab9b61679d1ba3ed5f01f23b
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.3+1"
+  socket_io_common:
+    dependency: transitive
+    description:
+      name: socket_io_common
+      sha256: "2ab92f8ff3ebbd4b353bf4a98bee45cc157e3255464b2f90f66e09c4472047eb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.3"
   source_gen:
     dependency: transitive
     description:

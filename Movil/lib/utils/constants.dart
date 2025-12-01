@@ -4,7 +4,7 @@ class AppConstants {
   // Para Android Emulator usar 10.0.2.2, para dispositivo físico usar IP de tu máquina
   static const String apiBaseUrl = String.fromEnvironment(
     'API_BASE_URL',
-    defaultValue: 'http://10.26.4.186:4000/api',
+    defaultValue: 'http://192.168.0.4:4000/api',
   );
 
   // Endpoints
