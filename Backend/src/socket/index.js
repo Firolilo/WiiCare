@@ -112,6 +112,55 @@ function setupSocketIO(io) {
       }
     });
 
+    // ✨ SENSOR DE FUERZA
+    // Paciente comienza a transmitir datos del sensor
+    socket.on('start-sensor-stream', ({ targetUserId }) => {
+      socket.sensorTargetUserId = targetUserId;
+      const targetSocketId = connectedUsers.get(targetUserId);
+      if (targetSocketId) {
+        console.log(`📡 ${userId} iniciando streaming de sensor para ${targetUserId}`);
+        io.to(targetSocketId).emit('sensor-stream-started', { patientId: userId });
+      }
+    });
+
+    // Paciente envía datos del sensor
+    socket.on('sensor-data', (data) => {
+      const targetUserId = socket.sensorTargetUserId;
+      if (targetUserId) {
+        const targetSocketId = connectedUsers.get(targetUserId);
+        if (targetSocketId) {
+          io.to(targetSocketId).emit('sensor-data', {
+            patientId: userId,
+            ...data
+          });
+        }
+      }
+    });
+
+    // Paciente detiene streaming del sensor
+    socket.on('stop-sensor-stream', () => {
+      const targetUserId = socket.sensorTargetUserId;
+      if (targetUserId) {
+        const targetSocketId = connectedUsers.get(targetUserId);
+        if (targetSocketId) {
+          console.log(`📡 ${userId} detuvo streaming de sensor`);
+          io.to(targetSocketId).emit('sensor-stream-stopped', { patientId: userId });
+        }
+      }
+      socket.sensorTargetUserId = null;
+    });
+
+    // Cuidador solicita ver sensor de un paciente
+    socket.on('request-sensor-stream', ({ patientId }) => {
+      const patientSocketId = connectedUsers.get(patientId);
+      if (patientSocketId) {
+        console.log(`👁️ Cuidador ${userId} solicita ver sensor de ${patientId}`);
+        io.to(patientSocketId).emit('sensor-stream-requested', { caregiverId: userId });
+      } else {
+        socket.emit('sensor-stream-error', { message: 'Paciente no conectado' });
+      }
+    });
+
     // Desconexión
     socket.on('disconnect', () => {
       console.log(`🔴 User disconnected: ${userId}`);

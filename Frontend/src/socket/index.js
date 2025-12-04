@@ -242,3 +242,91 @@ export const offCallFailed = () => {
     socket.off('call-failed');
   }
 };
+
+// ✨ SENSOR DE FUERZA
+export const startSensorStream = (targetUserId) => {
+  if (socket) {
+    console.log(`📡 Iniciando streaming de sensor para ${targetUserId}`);
+    socket.emit('start-sensor-stream', { targetUserId });
+  }
+};
+
+export const sendSensorData = (data) => {
+  if (socket) {
+    socket.emit('sensor-data', data);
+  }
+};
+
+export const stopSensorStream = () => {
+  if (socket) {
+    console.log('📡 Deteniendo streaming de sensor');
+    socket.emit('stop-sensor-stream');
+  }
+};
+
+export const requestSensorStream = (patientId) => {
+  if (socket) {
+    console.log(`👁️ Solicitando ver sensor de ${patientId}`);
+    socket.emit('request-sensor-stream', { patientId });
+  }
+};
+
+export const onSensorStreamStarted = (callback) => {
+  if (socket) {
+    socket.on('sensor-stream-started', callback);
+  }
+};
+
+export const onSensorData = (callback) => {
+  if (socket) {
+    socket.on('sensor-data', callback);
+  }
+};
+
+export const onSensorStreamStopped = (callback) => {
+  if (socket) {
+    socket.on('sensor-stream-stopped', callback);
+  }
+};
+
+export const onSensorStreamRequested = (callback) => {
+  if (socket) {
+    socket.on('sensor-stream-requested', callback);
+  }
+};
+
+export const onSensorStreamError = (callback) => {
+  if (socket) {
+    socket.on('sensor-stream-error', callback);
+  }
+};
+
+export const offSensorStreamStarted = () => {
+  if (socket) {
+    socket.off('sensor-stream-started');
+  }
+};
+
+export const offSensorData = () => {
+  if (socket) {
+    socket.off('sensor-data');
+  }
+};
+
+export const offSensorStreamStopped = () => {
+  if (socket) {
+    socket.off('sensor-stream-stopped');
+  }
+};
+
+export const offSensorStreamRequested = () => {
+  if (socket) {
+    socket.off('sensor-stream-requested');
+  }
+};
+
+export const offSensorStreamError = () => {
+  if (socket) {
+    socket.off('sensor-stream-error');
+  }
+};

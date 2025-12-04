@@ -51,13 +51,47 @@ export default function NavBar() {
                 Dashboard
               </Link>
               {user.role === 'caregiver' && (
-                <Link
-                  to="/crear-servicio"
-                  className={`${getTextStyle()} ${getHoverStyle()} transition-colors flex items-center gap-2`}
-                >
-                  <i className="bi bi-plus-circle"></i>
-                  Crear Servicio
-                </Link>
+                <>
+                  <Link
+                    to="/solicitudes"
+                    className={`${getTextStyle()} ${getHoverStyle()} transition-colors flex items-center gap-2`}
+                  >
+                    <i className="bi bi-inbox-fill"></i>
+                    Solicitudes
+                  </Link>
+                  <Link
+                    to="/mis-pacientes"
+                    className={`${getTextStyle()} ${getHoverStyle()} transition-colors flex items-center gap-2`}
+                  >
+                    <i className="bi bi-people-fill"></i>
+                    Mis Pacientes
+                  </Link>
+                  <Link
+                    to="/crear-servicio"
+                    className={`${getTextStyle()} ${getHoverStyle()} transition-colors flex items-center gap-2`}
+                  >
+                    <i className="bi bi-plus-circle"></i>
+                    Crear Servicio
+                  </Link>
+                </>
+              )}
+              {user.role === 'user' && (
+                <>
+                  <Link
+                    to="/mi-cuidado"
+                    className={`${getTextStyle()} ${getHoverStyle()} transition-colors flex items-center gap-2`}
+                  >
+                    <i className="bi bi-heart-pulse-fill"></i>
+                    Mi Cuidado
+                  </Link>
+                  <Link
+                    to="/sensor-fuerza"
+                    className={`${getTextStyle()} ${getHoverStyle()} transition-colors flex items-center gap-2`}
+                  >
+                    <i className="bi bi-activity"></i>
+                    Sensor Fuerza
+                  </Link>
+                </>
               )}
               <Link
                 to="/chat"

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/client';
+import { createServiceRequest } from '../api/patientManagement';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -9,6 +10,17 @@ export default function Dashboard() {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedServices, setSelectedServices] = useState([]);
+  
+  // Modal de solicitud
+  const [showRequestModal, setShowRequestModal] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
+  const [requestForm, setRequestForm] = useState({
+    patientType: 'elderly',
+    message: '',
+    startDate: '',
+    endDate: ''
+  });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const endpoint = user?.role === 'caregiver' 
@@ -55,26 +67,63 @@ export default function Dashboard() {
   };
 
   const handleStartChat = async (service) => {
+    // Abrir modal de solicitud en lugar de ir directo al chat
+    setSelectedService(service);
+    setRequestForm({
+      patientType: 'elderly',
+      message: `Hola, me interesa tu servicio "${service.title}". ¿Podrías darme más información?`,
+      startDate: '',
+      endDate: ''
+    });
+    setShowRequestModal(true);
+  };
+
+  const handleSubmitRequest = async () => {
+    if (!selectedService) return;
+    
+    setSubmitting(true);
     try {
-      // Crear o obtener conversación con el caregiver
-      const res = await api.get(`/chat/with/${service.caregiver._id}`);
+      // 1. Crear la solicitud de servicio
+      await createServiceRequest({
+        caregiver: selectedService.caregiver._id,
+        service: selectedService._id,
+        patientType: requestForm.patientType,
+        message: requestForm.message,
+        startDate: requestForm.startDate || undefined,
+        endDate: requestForm.endDate || undefined
+      });
+
+      // 2. También crear/abrir conversación con mensaje
+      const res = await api.get(`/chat/with/${selectedService.caregiver._id}`);
       const conversationId = res.data.conversation._id;
-      
-      // Crear mensaje inicial automático
-      const initialMessage = `Hola, me interesa tu servicio "${service.title}". ¿Podrías darme más información?`;
       
       await api.post('/chat/message', {
         conversationId: conversationId,
-        content: initialMessage
+        content: requestForm.message
       });
       
-      // Navegar al chat
-      navigate(`/chat/${conversationId}`);
+      setShowRequestModal(false);
+      setSelectedService(null);
+      
+      // Preguntar si quiere ir al chat
+      if (confirm('¡Solicitud enviada! El cuidador será notificado. ¿Deseas ir al chat?')) {
+        navigate(`/chat/${conversationId}`);
+      }
     } catch (error) {
-      console.error('Error al iniciar chat:', error);
-      alert('Error al abrir el chat. Intenta nuevamente.');
+      console.error('Error al enviar solicitud:', error);
+      alert(error.response?.data?.message || 'Error al enviar la solicitud. Intenta nuevamente.');
+    } finally {
+      setSubmitting(false);
     }
   };
+
+  const patientTypes = [
+    { value: 'elderly', label: 'Adulto Mayor', icon: 'bi-person-fill', description: 'Cuidado para personas de tercera edad' },
+    { value: 'child', label: 'Niño/a', icon: 'bi-emoji-smile-fill', description: 'Cuidado infantil especializado' },
+    { value: 'disability', label: 'Discapacidad', icon: 'bi-heart-pulse-fill', description: 'Asistencia para personas con discapacidad' },
+    { value: 'post-surgery', label: 'Post-operatorio', icon: 'bi-hospital-fill', description: 'Recuperación después de cirugía' },
+    { value: 'temporary', label: 'Temporal', icon: 'bi-clock-fill', description: 'Cuidado por tiempo limitado' }
+  ];
 
   if (loading)
     return (
@@ -266,6 +315,135 @@ export default function Dashboard() {
           </>
         )}
       </div>
+
+      {/* Modal de Solicitud de Servicio */}
+      {showRequestModal && selectedService && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-[#3A6EA5] to-[#5B8BBE] text-white p-6 rounded-t-2xl">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold">Solicitar Servicio</h2>
+                <button 
+                  onClick={() => setShowRequestModal(false)}
+                  className="text-white/80 hover:text-white text-2xl"
+                >
+                  <i className="bi bi-x-lg"></i>
+                </button>
+              </div>
+              <p className="text-blue-100 text-sm mt-1">
+                {selectedService.title} - {selectedService.caregiver?.name}
+              </p>
+            </div>
+
+            {/* Form */}
+            <div className="p-6 space-y-5">
+              {/* Tipo de Paciente */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                  Tipo de cuidado que necesitas *
+                </label>
+                <div className="grid gap-2">
+                  {patientTypes.map((type) => (
+                    <label 
+                      key={type.value}
+                      className={`flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                        requestForm.patientType === type.value 
+                          ? 'border-[#3A6EA5] bg-blue-50' 
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="patientType"
+                        value={type.value}
+                        checked={requestForm.patientType === type.value}
+                        onChange={(e) => setRequestForm({...requestForm, patientType: e.target.value})}
+                        className="sr-only"
+                      />
+                      <i className={`bi ${type.icon} text-2xl mr-3 text-[#3A6EA5]`}></i>
+                      <div>
+                        <p className="font-medium text-gray-800">{type.label}</p>
+                        <p className="text-xs text-gray-500">{type.description}</p>
+                      </div>
+                      {requestForm.patientType === type.value && (
+                        <i className="bi bi-check-circle-fill text-[#3A6EA5] ml-auto text-xl"></i>
+                      )}
+                    </label>
+                  ))}
+                </div>
+              </div>
+
+              {/* Fechas */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Fecha inicio (opcional)
+                  </label>
+                  <input
+                    type="date"
+                    value={requestForm.startDate}
+                    onChange={(e) => setRequestForm({...requestForm, startDate: e.target.value})}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3A6EA5] focus:border-transparent"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Fecha fin (opcional)
+                  </label>
+                  <input
+                    type="date"
+                    value={requestForm.endDate}
+                    onChange={(e) => setRequestForm({...requestForm, endDate: e.target.value})}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3A6EA5] focus:border-transparent"
+                  />
+                </div>
+              </div>
+
+              {/* Mensaje */}
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Mensaje para el cuidador
+                </label>
+                <textarea
+                  value={requestForm.message}
+                  onChange={(e) => setRequestForm({...requestForm, message: e.target.value})}
+                  rows={4}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3A6EA5] focus:border-transparent resize-none"
+                  placeholder="Describe brevemente lo que necesitas..."
+                />
+              </div>
+
+              {/* Botones */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => setShowRequestModal(false)}
+                  className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-all"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleSubmitRequest}
+                  disabled={submitting}
+                  className="flex-1 px-4 py-3 bg-[#3A6EA5] hover:bg-[#2B4C7E] text-white rounded-lg font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  {submitting ? (
+                    <>
+                      <i className="bi bi-arrow-repeat animate-spin"></i>
+                      Enviando...
+                    </>
+                  ) : (
+                    <>
+                      <i className="bi bi-send-fill"></i>
+                      Enviar Solicitud
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

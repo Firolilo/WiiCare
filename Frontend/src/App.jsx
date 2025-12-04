@@ -7,11 +7,21 @@ import Caregivers from './pages/Caregivers';
 import CreateService from './pages/CreateService';
 import Chat from './pages/Chat';
 import ChatPage from './pages/ChatPage';
+import ForceSensor from './pages/ForceSensor';
 import NavBar from './components/NavBar';
 import GlobalVideoCallManager from './components/GlobalVideoCallManager';
 import { AuthProvider } from './context/AuthContext';
 import { VideoCallProvider } from './context/VideoCallContext';
 import ProtectedRoute from './components/ProtectedRoute';
+
+// Caregiver components
+import ServiceRequests from './components/caregiver/ServiceRequests';
+import PatientList from './components/caregiver/PatientList';
+import PatientDashboard from './components/caregiver/PatientDashboard';
+import SensorMonitor from './components/caregiver/SensorMonitor';
+
+// Patient components
+import PatientCareView from './components/patient/PatientCareView';
 
 export default function App() {
   return (
@@ -91,6 +101,60 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <Caregivers />
+                  </ProtectedRoute>
+                }
+              />
+              
+              {/* Rutas de Cuidador - Gestión de Pacientes */}
+              <Route
+                path="/solicitudes"
+                element={
+                  <ProtectedRoute>
+                    <ServiceRequests />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/mis-pacientes"
+                element={
+                  <ProtectedRoute>
+                    <PatientList />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/paciente/:patientProfileId"
+                element={
+                  <ProtectedRoute>
+                    <PatientDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/paciente/:patientProfileId/sensor"
+                element={
+                  <ProtectedRoute>
+                    <SensorMonitor />
+                  </ProtectedRoute>
+                }
+              />
+              
+              {/* Ruta de Paciente - Ver mi cuidado */}
+              <Route
+                path="/mi-cuidado"
+                element={
+                  <ProtectedRoute>
+                    <PatientCareView />
+                  </ProtectedRoute>
+                }
+              />
+              
+              {/* Ruta del Sensor de Fuerza - Arduino */}
+              <Route
+                path="/sensor-fuerza"
+                element={
+                  <ProtectedRoute>
+                    <ForceSensor />
                   </ProtectedRoute>
                 }
               />
