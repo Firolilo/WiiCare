@@ -11,6 +11,7 @@ const { createDefaultAdmin } = require('./utils/createDefaultAdmin');
 const apiRoutes = require('./routes');
 const { notFound, errorHandler } = require('./middleware/error');
 const { setupSocketIO } = require('./socket');
+const serialService = require('./services/serialService');
 
 const app = express();
 const server = http.createServer(app);
@@ -25,6 +26,9 @@ const io = new Server(server, {
 
 // Inicializar Socket.IO handlers
 setupSocketIO(io);
+
+// Inicializar servicio serial con Socket.IO
+serialService.setSocketIO(io);
 
 // Hacer io accesible en toda la app
 app.set('io', io);
