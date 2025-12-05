@@ -31,7 +31,7 @@ services:
       - PORT=3000
       - MONGODB_URI=mongodb://mongo-primary:27017/wiicare?directConnection=true
       - JWT_SECRET=${JWT_SECRET:-wiicare_secret_key_2024}
-      - CLIENT_URL=${CLIENT_URL:-http://localhost:5173}
+      - CORS_ORIGINS=http://localhost:5173,http://localhost:3000,http://44.211.88.225,*
       - INSTANCE_ID=api-1
     depends_on:
       mongo-primary:
@@ -39,6 +39,12 @@ services:
     networks:
       - wiicare-network
     restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # ============================================
   # API ACTIVA 2
@@ -53,7 +59,7 @@ services:
       - PORT=3000
       - MONGODB_URI=mongodb://mongo-primary:27017/wiicare?directConnection=true
       - JWT_SECRET=${JWT_SECRET:-wiicare_secret_key_2024}
-      - CLIENT_URL=${CLIENT_URL:-http://localhost:5173}
+      - CORS_ORIGINS=http://localhost:5173,http://localhost:3000,http://44.211.88.225,*
       - INSTANCE_ID=api-2
     depends_on:
       mongo-primary:
@@ -61,6 +67,12 @@ services:
     networks:
       - wiicare-network
     restart: always
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   # ============================================
   # API STANDBY 1 (Backup)
