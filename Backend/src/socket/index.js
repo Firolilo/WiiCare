@@ -37,11 +37,19 @@ function setupSocketIO(io) {
     io.emit('user-online', { userId });
     console.log(`🟢 Emitiendo user-online para ${userId}`);
 
+    // Solicitar lista de usuarios online (para cuando el cliente se reconecta o navega)
+    socket.on('get-online-users', () => {
+      const onlineUserIds = Array.from(connectedUsers.keys());
+      console.log(`🔄 Usuario ${userId} solicitó lista de online. Enviando:`, onlineUserIds);
+      socket.emit('online-users-list', { userIds: onlineUserIds });
+    });
+
     // Unirse a una sala de conversación
     socket.on('join-conversation', (conversationId) => {
       socket.join(`conversation:${conversationId}`);
       console.log(`✅ User ${userId} joined conversation:${conversationId}`);
       console.log(`📊 Total rooms for this socket:`, Array.from(socket.rooms));
+    });
     });
 
     // Salir de una sala de conversación

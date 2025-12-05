@@ -15,7 +15,10 @@ import {
   offConversationUpdate,
   offUserOnline,
   offUserOffline,
-  offOnlineUsersList
+  offOnlineUsersList,
+  requestOnlineUsers,
+  getSocket,
+  isSocketConnected
 } from '../socket';
 
 export default function ChatPage() {
@@ -81,6 +84,22 @@ export default function ChatPage() {
         return newSet;
       });
     });
+
+    // Solicitar la lista de usuarios online (por si ya estamos conectados)
+    if (isSocketConnected()) {
+      requestOnlineUsers();
+    } else {
+      // Si el socket no está conectado, esperar a que se conecte
+      const socket = getSocket();
+      if (socket) {
+        const onConnect = () => {
+          console.log('🔌 Socket conectado, solicitando usuarios online...');
+          requestOnlineUsers();
+          socket.off('connect', onConnect);
+        };
+        socket.on('connect', onConnect);
+      }
+    }
 
     // Cleanup: remover listeners de presencia
     return () => {

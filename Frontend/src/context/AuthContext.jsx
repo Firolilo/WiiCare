@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import api from '../api/client';
 import { initializeSocket, disconnectSocket } from '../socket';
@@ -7,6 +7,8 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const socketInitialized = useRef(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -14,14 +16,28 @@ export function AuthProvider({ children }) {
       api.get('/auth/me')
         .then((res) => {
           setUser(res.data.user);
-          // Inicializar WebSocket cuando hay usuario
-          initializeSocket(token);
+          // Solo inicializar si no se ha hecho antes
+          if (!socketInitialized.current) {
+            socketInitialized.current = true;
+            initializeSocket(token);
+          }
         })
         .catch(() => {
           localStorage.removeItem('token');
           disconnectSocket();
+          socketInitialized.current = false;
+        })
+        .finally(() => {
+          setLoading(false);
         });
+    } else {
+      setLoading(false);
     }
+
+    // Cleanup al desmontar
+    return () => {
+      // No desconectar aquí - solo cuando logout explícito
+    };
   }, []);
 
   const login = async (email, password) => {
@@ -30,6 +46,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem('token', token);
     setUser(res.data.user);
     // Inicializar WebSocket
+    socketInitialized.current = true;
     initializeSocket(token);
   };
 
@@ -39,6 +56,7 @@ export function AuthProvider({ children }) {
     localStorage.setItem('token', token);
     setUser(res.data.user);
     // Inicializar WebSocket
+    socketInitialized.current = true;
     initializeSocket(token);
   };
   
@@ -47,9 +65,14 @@ export function AuthProvider({ children }) {
     setUser(null);
     // Desconectar WebSocket
     disconnectSocket();
+    socketInitialized.current = false;
   };
 
-  return <AuthContext.Provider value={{ user, login, logout,register }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ user, login, logout, register, loading }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export const useAuth = () => useContext(AuthContext);
