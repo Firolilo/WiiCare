@@ -16,12 +16,34 @@ const serialService = require('./services/serialService');
 const app = express();
 const server = http.createServer(app);
 
+// Configurar orígenes permitidos para CORS
+const allowedOrigins = (process.env.CORS_ORIGINS || process.env.CLIENT_URL || '*')
+  .split(',')
+  .map(origin => origin.trim());
+
+// Función para verificar origen
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Permitir requests sin origen (como apps móviles o Postman)
+    if (!origin) return callback(null, true);
+    
+    // Si allowedOrigins es '*', permitir todo
+    if (allowedOrigins.includes('*')) return callback(null, true);
+    
+    // Verificar si el origen está permitido
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    console.log(`⚠️ CORS bloqueó origen: ${origin}`);
+    callback(new Error('No permitido por CORS'));
+  },
+  credentials: true
+};
+
 // Configurar Socket.IO
 const io = new Server(server, {
-  cors: {
-    origin: process.env.CLIENT_URL || '*',
-    credentials: true
-  }
+  cors: corsOptions
 });
 
 // Inicializar Socket.IO handlers
@@ -34,7 +56,7 @@ serialService.setSocketIO(io);
 app.set('io', io);
 
 // Middlewares
-app.use(cors({ origin: process.env.CLIENT_URL || '*', credentials: true }));
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(morgan('dev'));
 
