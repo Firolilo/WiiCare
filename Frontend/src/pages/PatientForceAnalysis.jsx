@@ -60,11 +60,11 @@ export default function PatientForceAnalysis() {
   const getTrendIcon = (direction) => {
     switch (direction) {
       case 'improving':
-        return <span className="text-green-600 text-2xl">📈</span>;
+        return <i className="bi bi-graph-up-arrow text-green-600 text-2xl"></i>;
       case 'declining':
-        return <span className="text-red-600 text-2xl">📉</span>;
+        return <i className="bi bi-graph-down-arrow text-red-600 text-2xl"></i>;
       default:
-        return <span className="text-gray-600 text-2xl">➡️</span>;
+        return <i className="bi bi-arrow-right text-gray-600 text-2xl"></i>;
     }
   };
 
@@ -110,7 +110,7 @@ export default function PatientForceAnalysis() {
     return (
       <div className="max-w-4xl mx-auto p-6">
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 text-center">
-          <div className="text-5xl mb-4">📊</div>
+          <div className="text-5xl mb-4"><i className="bi bi-bar-chart-line"></i></div>
           <h2 className="text-xl font-semibold text-yellow-800 mb-2">
             Sin datos suficientes
           </h2>
@@ -143,7 +143,7 @@ export default function PatientForceAnalysis() {
             ← Volver
           </button>
           <h1 className="text-2xl font-bold text-[#5a3825]">
-            📊 Análisis de Fuerza del Paciente
+            <i className="bi bi-graph-up-arrow mr-2"></i>Análisis de Fuerza del Paciente
           </h1>
           <p className="text-gray-600">
             Últimos {analysis.periodDays} días • {analysis.totalReadings} mediciones
@@ -156,7 +156,7 @@ export default function PatientForceAnalysis() {
         {/* Estado Actual */}
         <div className={`rounded-xl border-2 p-6 ${getStatusColor(analysis.currentStatus.color)}`}>
           <h2 className="text-lg font-semibold mb-3 flex items-center gap-2">
-            <span>🎯</span> Estado Actual
+            <i className="bi bi-bullseye"></i> Estado Actual
           </h2>
           
           <div className="text-3xl font-bold mb-2">
@@ -211,7 +211,7 @@ export default function PatientForceAnalysis() {
       {/* Recomendación */}
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
         <h2 className="text-lg font-semibold text-blue-800 mb-2 flex items-center gap-2">
-          <span>💡</span> Recomendación
+          <i className="bi bi-lightbulb"></i> Recomendación
         </h2>
         <p className="text-blue-900">
           {analysis.recommendation}
@@ -220,7 +220,7 @@ export default function PatientForceAnalysis() {
 
       {/* Estadísticas Generales */}
       <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-        <h2 className="text-lg font-semibold text-gray-700 mb-4">📈 Estadísticas Generales</h2>
+        <h2 className="text-lg font-semibold text-gray-700 mb-4"><i className="bi bi-bar-chart-fill mr-2"></i>Estadísticas Generales</h2>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-gray-50 rounded-lg p-4 text-center">
@@ -255,7 +255,7 @@ export default function PatientForceAnalysis() {
 
       {/* Comparación por Períodos */}
       <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-        <h2 className="text-lg font-semibold text-gray-700 mb-4">📅 Comparación por Períodos</h2>
+        <h2 className="text-lg font-semibold text-gray-700 mb-4"><i className="bi bi-calendar3 mr-2"></i>Comparación por Períodos</h2>
         
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -296,7 +296,7 @@ export default function PatientForceAnalysis() {
         <div className="grid md:grid-cols-2 gap-6 mb-6">
           {/* Mejores días */}
           <div className="bg-green-50 border border-green-200 rounded-xl p-6">
-            <h3 className="font-semibold text-green-800 mb-3">🌟 Mejores días</h3>
+            <h3 className="font-semibold text-green-800 mb-3"><i className="bi bi-star-fill mr-2"></i>Mejores días</h3>
             <div className="space-y-2">
               {analysis.patterns.bestDays.map((day, idx) => (
                 <div key={idx} className="flex justify-between items-center">
@@ -311,7 +311,7 @@ export default function PatientForceAnalysis() {
 
           {/* Días que necesitan atención */}
           <div className="bg-orange-50 border border-orange-200 rounded-xl p-6">
-            <h3 className="font-semibold text-orange-800 mb-3">⚠️ Días con menor fuerza</h3>
+            <h3 className="font-semibold text-orange-800 mb-3"><i className="bi bi-exclamation-triangle-fill mr-2"></i>Días con menor fuerza</h3>
             <div className="space-y-2">
               {analysis.patterns.worstDays.map((day, idx) => (
                 <div key={idx} className="flex justify-between items-center">
@@ -329,7 +329,7 @@ export default function PatientForceAnalysis() {
       {/* Últimas lecturas */}
       {recentReadings.length > 0 && (
         <div className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-lg font-semibold text-gray-700 mb-4">🕐 Últimas Mediciones</h2>
+          <h2 className="text-lg font-semibold text-gray-700 mb-4"><i className="bi bi-clock-history mr-2"></i>Últimas Mediciones</h2>
           
           <div className="space-y-2 max-h-64 overflow-y-auto">
             {recentReadings.slice(0, 10).map((reading, idx) => (

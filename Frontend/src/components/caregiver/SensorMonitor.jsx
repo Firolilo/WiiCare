@@ -30,7 +30,8 @@ export default function SensorMonitor() {
       try {
         setLoading(true);
         const data = await getPatientProfile(patientProfileId);
-        setPatient(data);
+        console.log('Datos del paciente cargados:', data);
+        setPatient(data.profile); // Guardar solo el profile
       } catch (err) {
         console.error('Error cargando paciente:', err);
         setError('Error al cargar información del paciente');
@@ -89,9 +90,14 @@ export default function SensorMonitor() {
 
   // Solicitar stream del paciente
   const requestStream = () => {
-    if (patient?.user?._id) {
-      requestSensorStream(patient.user._id);
+    const patientUserId = patient?.patient?._id;
+    console.log('Solicitando stream para paciente:', patientUserId);
+    if (patientUserId) {
+      requestSensorStream(patientUserId);
       setError(null);
+    } else {
+      setError('No se pudo obtener el ID del paciente');
+      console.error('patient.patient._id no disponible:', patient);
     }
   };
 
@@ -101,14 +107,14 @@ export default function SensorMonitor() {
     setHistory([]);
   };
 
-  // Calcular porcentaje para la barra de fuerza
-  const forcePercentage = Math.min((currentData.fuerza / 10) * 100, 100);
+  // Calcular porcentaje para la barra de fuerza (máximo 50N)
+  const forcePercentage = Math.min((currentData.fuerza / 50) * 100, 100);
   
-  // Color basado en la fuerza
+  // Color basado en la fuerza (ajustado para 50N)
   const getForceColor = (force) => {
-    if (force < 1) return 'bg-green-500';
-    if (force < 3) return 'bg-yellow-500';
-    if (force < 6) return 'bg-orange-500';
+    if (force < 10) return 'bg-green-500';
+    if (force < 25) return 'bg-yellow-500';
+    if (force < 40) return 'bg-orange-500';
     return 'bg-red-500';
   };
 
@@ -145,10 +151,10 @@ export default function SensorMonitor() {
         </Link>
         <div>
           <h1 className="text-3xl font-bold text-[#5a3825]">
-            📡 Monitor del Sensor
+            <i className="bi bi-broadcast mr-2"></i>Monitor del Sensor
           </h1>
           <p className="text-gray-600">
-            Paciente: <span className="font-semibold">{patient.user?.nombre || 'Sin nombre'}</span>
+            Paciente: <span className="font-semibold">{patient.patient?.name || 'Sin nombre'}</span>
           </p>
         </div>
       </div>
@@ -186,7 +192,7 @@ export default function SensorMonitor() {
               onClick={resetData}
               className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
             >
-              🔄 Reset
+              <i className="bi bi-arrow-clockwise mr-1"></i>Reset
             </button>
           </div>
         </div>
@@ -231,7 +237,7 @@ export default function SensorMonitor() {
           
           <div className="flex justify-between text-sm text-gray-500 mt-1">
             <span>0 N</span>
-            <span>10 N</span>
+            <span>50 N</span>
           </div>
         </div>
 

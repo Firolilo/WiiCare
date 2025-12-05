@@ -1,9 +1,32 @@
 import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { getCaregiverDashboardStats } from '../api/reviews';
 
 export default function Home() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [dashboardStats, setDashboardStats] = useState(null);
+  const [loadingStats, setLoadingStats] = useState(false);
+
+  // Cargar estadísticas del cuidador
+  useEffect(() => {
+    if (user?.role === 'caregiver') {
+      loadDashboardStats();
+    }
+  }, [user]);
+
+  const loadDashboardStats = async () => {
+    setLoadingStats(true);
+    try {
+      const data = await getCaregiverDashboardStats();
+      setDashboardStats(data.data);
+    } catch (error) {
+      console.error('Error al cargar estadísticas:', error);
+    } finally {
+      setLoadingStats(false);
+    }
+  };
 
   // Landing page para usuarios NO autenticados
   if (!user) {
@@ -220,17 +243,25 @@ export default function Home() {
                 <span className="text-gray-600 font-medium">Servicios Activos</span>
                 <span className="text-3xl text-blue-500"><i className="bi bi-bar-chart-fill"></i></span>
               </div>
-              <div className="text-3xl font-bold text-[#2B4C7E]">5</div>
-              <div className="text-sm text-green-600 mt-1">+2 este mes</div>
+              {loadingStats ? (
+                <div className="animate-pulse h-8 bg-gray-200 rounded w-16"></div>
+              ) : (
+                <div className="text-3xl font-bold text-[#2B4C7E]">{dashboardStats?.activeServices || 0}</div>
+              )}
+              <div className="text-sm text-green-600 mt-1">Servicios publicados</div>
             </div>
 
             <div className="bg-white rounded-xl shadow-md p-6 border-t-4 border-green-500">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-gray-600 font-medium">Consultas Nuevas</span>
+                <span className="text-gray-600 font-medium">Solicitudes Nuevas</span>
                 <span className="text-3xl text-green-500"><i className="bi bi-chat-dots-fill"></i></span>
               </div>
-              <div className="text-3xl font-bold text-[#2B4C7E]">12</div>
-              <div className="text-sm text-blue-600 mt-1">3 sin responder</div>
+              {loadingStats ? (
+                <div className="animate-pulse h-8 bg-gray-200 rounded w-16"></div>
+              ) : (
+                <div className="text-3xl font-bold text-[#2B4C7E]">{dashboardStats?.newRequests || 0}</div>
+              )}
+              <div className="text-sm text-blue-600 mt-1">Pendientes de respuesta</div>
             </div>
 
             <div className="bg-white rounded-xl shadow-md p-6 border-t-4 border-yellow-500">
@@ -238,8 +269,14 @@ export default function Home() {
                 <span className="text-gray-600 font-medium">Calificación</span>
                 <span className="text-3xl text-yellow-500"><i className="bi bi-star-fill"></i></span>
               </div>
-              <div className="text-3xl font-bold text-[#2B4C7E]">4.8</div>
-              <div className="text-sm text-gray-600 mt-1">23 reseñas</div>
+              {loadingStats ? (
+                <div className="animate-pulse h-8 bg-gray-200 rounded w-16"></div>
+              ) : (
+                <div className="text-3xl font-bold text-[#2B4C7E]">
+                  {dashboardStats?.averageRating?.toFixed(1) || 'N/A'}
+                </div>
+              )}
+              <div className="text-sm text-gray-600 mt-1">{dashboardStats?.totalReviews || 0} reseñas</div>
             </div>
           </div>
 

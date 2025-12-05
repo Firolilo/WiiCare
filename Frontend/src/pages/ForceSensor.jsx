@@ -72,7 +72,7 @@ export default function ForceSensor() {
       await saveForceReadingsBatch(readingsToSave);
       setSavedCount(prev => prev + readingsToSave.length);
       setLastSaved(new Date());
-      console.log(`💾 ${readingsToSave.length} lecturas guardadas`);
+      console.log(`[SAVE] ${readingsToSave.length} lecturas guardadas`);
     } catch (err) {
       console.error('Error guardando lecturas:', err);
       // Reintentar agregando las lecturas de vuelta
@@ -169,7 +169,7 @@ export default function ForceSensor() {
               timestamp: Date.now()
             };
             
-            console.log('📡 Lectura Arduino:', data);
+            console.log('[ARDUINO] Lectura:', data);
             setCurrentData(data);
             
             // Actualizar máximo
@@ -181,8 +181,8 @@ export default function ForceSensor() {
               return newHistory.slice(-50);
             });
 
-            // Agregar a lecturas pendientes para guardar en BD
-            if (autoSaveEnabled) {
+            // Agregar a lecturas pendientes para guardar en BD (solo si fuerza > 0)
+            if (autoSaveEnabled && data.fuerza > 0) {
               pendingReadingsRef.current.push({
                 adcValue: data.adc,
                 forceNewtons: data.fuerza,
@@ -208,8 +208,8 @@ export default function ForceSensor() {
                   return newHistory.slice(-50);
                 });
                 
-                // Agregar a lecturas pendientes para guardar en BD
-                if (autoSaveEnabled) {
+                // Agregar a lecturas pendientes para guardar en BD (solo si fuerza > 0)
+                if (autoSaveEnabled && data.fuerza > 0) {
                   pendingReadingsRef.current.push({
                     adcValue: data.adc,
                     forceNewtons: data.fuerza,
@@ -241,31 +241,65 @@ export default function ForceSensor() {
   // Función para desconectar
   const disconnect = useCallback(async () => {
     try {
-      // Guardar lecturas pendientes antes de desconectar
-      if (pendingReadingsRef.current.length > 0) {
-        await savePendingReadings();
-      }
-
+      console.log('[DISCONNECT] Iniciando desconexión...');
+      
       // Detener compartir primero
       if (isSharing) {
         stopSensorStream();
         setIsSharing(false);
       }
 
+      // Cancelar el reader primero (esto detendrá el loop de lectura)
       if (readerRef.current) {
-        await readerRef.current.cancel();
-        await readableStreamClosedRef.current;
+        try {
+          await readerRef.current.cancel();
+          console.log('[OK] Reader cancelado');
+        } catch (e) {
+          console.log('Reader ya cancelado:', e.message);
+        }
+        readerRef.current = null;
+      }
+
+      // Esperar a que el stream se cierre (con timeout)
+      if (readableStreamClosedRef.current) {
+        try {
+          await Promise.race([
+            readableStreamClosedRef.current,
+            new Promise(resolve => setTimeout(resolve, 1000)) // Timeout de 1 segundo
+          ]);
+          console.log('[OK] Stream cerrado');
+        } catch (e) {
+          console.log('Stream error (ignorado):', e.message);
+        }
+        readableStreamClosedRef.current = null;
       }
       
+      // Cerrar el puerto
       if (portRef.current) {
-        await portRef.current.close();
+        try {
+          await portRef.current.close();
+          console.log('[OK] Puerto cerrado');
+        } catch (e) {
+          console.log('Puerto ya cerrado:', e.message);
+        }
+        portRef.current = null;
       }
       
       setIsConnected(false);
-      readerRef.current = null;
-      portRef.current = null;
+      console.log('[OK] Desconexión completada');
+
+      // Guardar lecturas pendientes después de desconectar (no bloquea)
+      if (pendingReadingsRef.current.length > 0) {
+        savePendingReadings().catch(err => {
+          console.error('Error guardando lecturas pendientes:', err);
+        });
+      }
     } catch (err) {
       console.error('Error al desconectar:', err);
+      // Forzar estado desconectado incluso si hay error
+      setIsConnected(false);
+      readerRef.current = null;
+      portRef.current = null;
     }
   }, [isSharing, savePendingReadings]);
 
@@ -306,7 +340,7 @@ export default function ForceSensor() {
     return (
       <div className="max-w-2xl mx-auto p-6">
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
-          <h2 className="font-bold text-lg mb-2">⚠️ Navegador no compatible</h2>
+          <h2 className="font-bold text-lg mb-2"><i className="bi bi-exclamation-triangle-fill mr-2"></i>Navegador no compatible</h2>
           <p>Web Serial API no está disponible en tu navegador.</p>
           <p className="mt-2">Por favor usa <strong>Google Chrome</strong> o <strong>Microsoft Edge</strong>.</p>
         </div>
@@ -319,7 +353,7 @@ export default function ForceSensor() {
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold text-[#5a3825] mb-2">
-          🏋️ Sensor de Fuerza
+          <i className="bi bi-speedometer2 mr-2"></i>Sensor de Fuerza
         </h1>
         <p className="text-gray-600">
           Conecta tu sensor Arduino para medir y compartir tu progreso
@@ -347,14 +381,14 @@ export default function ForceSensor() {
                 onClick={connect}
                 className="px-6 py-2 bg-[#7C5C42] hover:bg-[#5a3825] text-white rounded-lg transition-colors font-medium"
               >
-                🔌 Conectar Arduino
+                <i className="bi bi-plug-fill mr-2"></i>Conectar Arduino
               </button>
             ) : (
               <button
                 onClick={disconnect}
                 className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors font-medium"
               >
-                ⏹️ Desconectar
+                <i className="bi bi-stop-fill mr-2"></i>Desconectar
               </button>
             )}
             
@@ -362,7 +396,7 @@ export default function ForceSensor() {
               onClick={resetMax}
               className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
             >
-              🔄 Reset
+              <i className="bi bi-arrow-clockwise mr-1"></i>Reset
             </button>
           </div>
         </div>
@@ -516,7 +550,7 @@ export default function ForceSensor() {
                   )}
                   {lastSaved && !isSaving && (
                     <div className="text-green-600 text-xs">
-                      ✓ Último guardado: {lastSaved.toLocaleTimeString()}
+                      <i className="bi bi-check-circle-fill mr-1"></i>Último guardado: {lastSaved.toLocaleTimeString()}
                     </div>
                   )}
                 </div>
@@ -558,7 +592,7 @@ export default function ForceSensor() {
 
       {/* Instrucciones */}
       <div className="mt-6 bg-[#f5f0e8] rounded-xl p-6">
-        <h3 className="font-semibold text-[#5a3825] mb-3">📋 Instrucciones</h3>
+        <h3 className="font-semibold text-[#5a3825] mb-3"><i className="bi bi-list-check mr-2"></i>Instrucciones</h3>
         <ol className="list-decimal list-inside space-y-2 text-gray-700">
           <li>Conecta tu Arduino al puerto USB de tu computadora</li>
           <li>Asegúrate de que el código del Arduino esté cargado y funcionando</li>
@@ -567,7 +601,7 @@ export default function ForceSensor() {
         </ol>
         
         <div className="mt-4 p-3 bg-yellow-100 rounded-lg text-sm">
-          <strong>💡 Nota:</strong> Esta función solo está disponible en Chrome y Edge. 
+          <strong><i className="bi bi-lightbulb-fill mr-1"></i>Nota:</strong> Esta función solo está disponible en Chrome y Edge. 
           El navegador te pedirá permiso para acceder al puerto serial.
         </div>
       </div>
