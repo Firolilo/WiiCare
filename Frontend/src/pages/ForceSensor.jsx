@@ -104,29 +104,50 @@ export default function ForceSensor() {
         
         for (const line of lines) {
           const trimmedLine = line.trim();
-          if (trimmedLine.startsWith('{') && trimmedLine.endsWith('}')) {
+          
+          // Intentar parsear formato del Arduino: "ADC: XXX  |  Fuerza (N): YYY"
+          const adcMatch = trimmedLine.match(/ADC:\s*([\d.]+)/);
+          const forceMatch = trimmedLine.match(/Fuerza \(N\):\s*([\d.]+)/);
+          
+          if (adcMatch && forceMatch) {
+            const data = {
+              adc: parseFloat(adcMatch[1]),
+              fuerza: parseFloat(forceMatch[1])
+            };
+            
+            console.log('📡 Lectura Arduino:', data);
+            setCurrentData(data);
+            
+            // Actualizar máximo
+            setMaxForce(prev => Math.max(prev, data.fuerza));
+            
+            // Agregar al historial (mantener últimos 50 puntos)
+            setHistory(prev => {
+              const newHistory = [...prev, { ...data, timestamp: Date.now() }];
+              return newHistory.slice(-50);
+            });
+
+            // Enviar al cuidador si está compartiendo
+            if (isSharing && caregiver?.id) {
+              sendSensorData(data);
+            }
+          } else if (trimmedLine.startsWith('{') && trimmedLine.endsWith('}')) {
+            // Fallback: intentar parsear como JSON
             try {
               const data = JSON.parse(trimmedLine);
               
               if (typeof data.adc === 'number' && typeof data.fuerza === 'number') {
                 setCurrentData(data);
-                
-                // Actualizar máximo
                 setMaxForce(prev => Math.max(prev, data.fuerza));
-                
-                // Agregar al historial (mantener últimos 50 puntos)
                 setHistory(prev => {
                   const newHistory = [...prev, { ...data, timestamp: Date.now() }];
                   return newHistory.slice(-50);
                 });
-
-                // Enviar al cuidador si está compartiendo
                 if (isSharing && caregiver?.id) {
                   sendSensorData(data);
                 }
               }
             } catch (parseError) {
-              // Ignorar líneas que no son JSON válido
               console.debug('Línea no JSON:', trimmedLine);
             }
           }
