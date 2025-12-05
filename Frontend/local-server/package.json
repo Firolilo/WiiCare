@@ -1,0 +1,17 @@
+{
+  "name": "wiicare-local-server",
+  "version": "1.0.0",
+  "description": "Servidor local para comunicación con Arduino FSR",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "serialport": "^12.0.0",
+    "@serialport/parser-readline": "^12.0.0",
+    "socket.io": "^4.8.1"
+  }
+}
