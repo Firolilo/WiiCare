@@ -17,7 +17,7 @@ Aplicación móvil de WiiCare para Android e iOS. Permite que usuarios y cuidado
 - **Dart**: 3.0.0 o superior (incluido con Flutter)
 - **Android Studio** o **Xcode** (según la plataforma objetivo)
 - **Dispositivo/Emulador**: Android 5.0+ o iOS 12+
-- **Backend WiiCare** corriendo en `http://localhost:4000` (ver `/Backend`)
+- **Backend WiiCare** corriendo en `http://44.211.88.225` (ver `/Backend`)
 - **Cuenta Agora.io** (para videollamadas) - [Crear cuenta gratis](https://www.agora.io/)
 
 ## 🚀 Instalación y Configuración
@@ -52,7 +52,7 @@ static const String apiBaseUrl = String.fromEnvironment(
 **Opciones:**
 - Android Emulator: `http://10.0.2.2:4000/api`
 - Dispositivo físico: `http://TU_IP_LOCAL:4000/api` (ej: `http://192.168.0.27:4000/api`)
-- iOS Simulator: `http://localhost:4000/api`
+- iOS Simulator: `http://44.211.88.225/api`
 
 ### 4. Configurar Videollamadas (Opcional)
 
@@ -328,7 +328,7 @@ flutter pub run build_runner build --delete-conflicting-outputs
 ### No se conecta al backend
 
 - **Android Emulator**: Usa `http://10.0.2.2:4000/api`
-- **iOS Simulator**: Usa `http://localhost:4000/api`
+- **iOS Simulator**: Usa `http://44.211.88.225/api`
 - **Dispositivo físico**: Usa tu IP local (ej. `http://192.168.1.10:4000/api`)
 
 Verifica que el backend esté corriendo:

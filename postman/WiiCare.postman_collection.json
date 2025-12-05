@@ -176,7 +176,7 @@
     }
   ],
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:4000", "type": "string" },
+    { "key": "baseUrl", "value": "http://44.211.88.225", "type": "string" },
     { "key": "token", "value": "", "type": "string" }
   ]
 }

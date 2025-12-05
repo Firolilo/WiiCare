@@ -8,7 +8,7 @@ export const initializeSocket = (token) => {
   }
 
   // Usar la URL del backend directamente (no el proxy de Vite)
-  const socketUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+  const socketUrl = import.meta.env.VITE_API_URL || 'http://44.211.88.225';
   console.log('🔌 Conectando socket a:', socketUrl);
 
   socket = io(socketUrl, {

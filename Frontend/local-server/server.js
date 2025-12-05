@@ -16,7 +16,7 @@ const server = http.createServer(app);
 
 // Configuración
 const LOCAL_PORT = 3001;
-const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:4000';
+const BACKEND_URL = process.env.BACKEND_URL || 'http://44.211.88.225';
 
 // Socket.IO para comunicación en tiempo real con el frontend
 const io = new Server(server, {

@@ -103,7 +103,7 @@ static const String apiBaseUrl = 'http://TU_IP:4000/api';
 
 **Importante:**
 - **Android Emulator**: Usar `http://10.0.2.2:4000/api`
-- **iOS Simulator**: Usar `http://localhost:4000/api`
+- **iOS Simulator**: Usar `http://44.211.88.225/api`
 - **Dispositivo Físico**: Usar `http://TU_IP_LOCAL:4000/api` (ejemplo: `http://192.168.1.100:4000/api`)
 
 ## 📱 Flujo de Uso

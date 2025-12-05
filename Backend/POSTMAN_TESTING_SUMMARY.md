@@ -124,7 +124,7 @@ cd Backend
 1. Abre Postman Desktop
 2. Importa: postman/WiiCare.postman_collection.json
 3. Configura variables de entorno:
-   - baseUrl: http://localhost:4000
+   - baseUrl: http://44.211.88.225
    - token: (se genera automáticamente tras login)
 4. Ejecuta la colección manualmente
 ```
@@ -138,7 +138,7 @@ La colección usa estas variables que puedes configurar:
 
 | Variable | Valor por Defecto | Descripción |
 |----------|-------------------|-------------|
-| `baseUrl` | `http://localhost:4000` | URL base del backend |
+| `baseUrl` | `http://44.211.88.225` | URL base del backend |
 | `token` | (vacío) | JWT token (se actualiza automáticamente) |
 
 ### **Variables de Entorno (Backend .env)**

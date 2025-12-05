@@ -39,7 +39,7 @@ Write-Host "──────────────────────�
 Write-Host ""
 
 Write-Host "⚠️  IMPORTANTE: Asegúrate de que:" -ForegroundColor Yellow
-Write-Host "   1. El backend esté corriendo en http://localhost:4000" -ForegroundColor White
+Write-Host "   1. El backend esté corriendo en http://44.211.88.225" -ForegroundColor White
 Write-Host "   2. MongoDB esté activo y accesible" -ForegroundColor White
 Write-Host "   3. Las variables de entorno (.env) estén configuradas" -ForegroundColor White
 Write-Host ""
