@@ -8,6 +8,7 @@ import CreateService from './pages/CreateService';
 import Chat from './pages/Chat';
 import ChatPage from './pages/ChatPage';
 import ForceSensor from './pages/ForceSensor';
+import PatientForceAnalysis from './pages/PatientForceAnalysis';
 import NavBar from './components/NavBar';
 import GlobalVideoCallManager from './components/GlobalVideoCallManager';
 import { AuthProvider } from './context/AuthContext';
@@ -155,6 +156,16 @@ export default function App() {
                 element={
                   <ProtectedRoute>
                     <ForceSensor />
+                  </ProtectedRoute>
+                }
+              />
+              
+              {/* Análisis de fuerza del paciente - Para cuidadores */}
+              <Route
+                path="/paciente/:patientId/analisis-fuerza"
+                element={
+                  <ProtectedRoute>
+                    <PatientForceAnalysis />
                   </ProtectedRoute>
                 }
               />

@@ -115,6 +115,13 @@ export default function PatientDashboard() {
             </div>
             <div className="flex gap-2">
               <Link
+                to={`/paciente/${profile.patient?._id}/analisis-fuerza`}
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center gap-2"
+              >
+                <i className="bi bi-graph-up"></i>
+                Análisis Fuerza
+              </Link>
+              <Link
                 to={`/paciente/${patientProfileId}/sensor`}
                 className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
               >

@@ -95,12 +95,29 @@ router.get('/readings/:userId', requireAuth, forceController.getReadings);
 router.post('/readings', requireAuth, forceController.saveManualReading);
 
 /**
+ * @route   POST /api/force/readings/batch
+ * @desc    Guarda múltiples lecturas en lote
+ * @body    { readings: Array<{ adcValue, forceNewtons, timestamp? }> }
+ * @access  Private
+ */
+router.post('/readings/batch', requireAuth, forceController.saveBatchReadings);
+
+/**
  * @route   PATCH /api/force/readings/:readingId/notes
  * @desc    Agrega o actualiza notas en una lectura
  * @body    { notes: string }
  * @access  Private
  */
 router.patch('/readings/:readingId/notes', requireAuth, forceController.addNote);
+
+// ============ Rutas de Análisis ============
+
+/**
+ * @route   GET /api/force/analysis/:userId
+ * @desc    Obtiene análisis completo de un paciente (tendencia, estado, recomendaciones)
+ * @access  Private (para cuidadores)
+ */
+router.get('/analysis/:userId', requireAuth, forceController.getPatientAnalysis);
 
 // ============ Rutas de Estadísticas ============
 

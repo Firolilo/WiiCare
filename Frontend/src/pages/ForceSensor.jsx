@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getMyCareDashboard } from '../api/patientManagement';
+import { saveForceReadingsBatch } from '../api/force';
 import { 
   startSensorStream, 
   sendSensorData, 
@@ -20,6 +21,14 @@ export default function ForceSensor() {
   const [caregiver, setCaregiver] = useState(null);
   const [isSharing, setIsSharing] = useState(false);
   const [caregiverRequested, setCaregiverRequested] = useState(false);
+  
+  // Estados para guardado automático
+  const [isSaving, setIsSaving] = useState(false);
+  const [lastSaved, setLastSaved] = useState(null);
+  const [savedCount, setSavedCount] = useState(0);
+  const [autoSaveEnabled, setAutoSaveEnabled] = useState(true);
+  const pendingReadingsRef = useRef([]);
+  const saveIntervalRef = useRef(null);
   
   const portRef = useRef(null);
   const readerRef = useRef(null);
@@ -50,6 +59,50 @@ export default function ForceSensor() {
     };
     loadCaregiverInfo();
   }, []);
+
+  // Función para guardar lecturas pendientes en la base de datos
+  const savePendingReadings = useCallback(async () => {
+    if (pendingReadingsRef.current.length === 0 || !autoSaveEnabled) return;
+    
+    const readingsToSave = [...pendingReadingsRef.current];
+    pendingReadingsRef.current = [];
+    
+    try {
+      setIsSaving(true);
+      await saveForceReadingsBatch(readingsToSave);
+      setSavedCount(prev => prev + readingsToSave.length);
+      setLastSaved(new Date());
+      console.log(`💾 ${readingsToSave.length} lecturas guardadas`);
+    } catch (err) {
+      console.error('Error guardando lecturas:', err);
+      // Reintentar agregando las lecturas de vuelta
+      pendingReadingsRef.current = [...readingsToSave, ...pendingReadingsRef.current];
+    } finally {
+      setIsSaving(false);
+    }
+  }, [autoSaveEnabled]);
+
+  // Configurar intervalo de guardado automático (cada 10 segundos)
+  useEffect(() => {
+    if (isConnected && autoSaveEnabled) {
+      saveIntervalRef.current = setInterval(savePendingReadings, 10000);
+    }
+    
+    return () => {
+      if (saveIntervalRef.current) {
+        clearInterval(saveIntervalRef.current);
+      }
+    };
+  }, [isConnected, autoSaveEnabled, savePendingReadings]);
+
+  // Guardar lecturas pendientes al desconectar
+  useEffect(() => {
+    return () => {
+      if (pendingReadingsRef.current.length > 0) {
+        savePendingReadings();
+      }
+    };
+  }, [savePendingReadings]);
 
   // Escuchar si el cuidador solicita ver el sensor
   useEffect(() => {
@@ -112,7 +165,8 @@ export default function ForceSensor() {
           if (adcMatch && forceMatch) {
             const data = {
               adc: parseFloat(adcMatch[1]),
-              fuerza: parseFloat(forceMatch[1])
+              fuerza: parseFloat(forceMatch[1]),
+              timestamp: Date.now()
             };
             
             console.log('📡 Lectura Arduino:', data);
@@ -123,9 +177,18 @@ export default function ForceSensor() {
             
             // Agregar al historial (mantener últimos 50 puntos)
             setHistory(prev => {
-              const newHistory = [...prev, { ...data, timestamp: Date.now() }];
+              const newHistory = [...prev, data];
               return newHistory.slice(-50);
             });
+
+            // Agregar a lecturas pendientes para guardar en BD
+            if (autoSaveEnabled) {
+              pendingReadingsRef.current.push({
+                adcValue: data.adc,
+                forceNewtons: data.fuerza,
+                timestamp: data.timestamp
+              });
+            }
 
             // Enviar al cuidador si está compartiendo
             if (isSharing && caregiver?.id) {
@@ -137,12 +200,23 @@ export default function ForceSensor() {
               const data = JSON.parse(trimmedLine);
               
               if (typeof data.adc === 'number' && typeof data.fuerza === 'number') {
-                setCurrentData(data);
+                const dataWithTime = { ...data, timestamp: Date.now() };
+                setCurrentData(dataWithTime);
                 setMaxForce(prev => Math.max(prev, data.fuerza));
                 setHistory(prev => {
-                  const newHistory = [...prev, { ...data, timestamp: Date.now() }];
+                  const newHistory = [...prev, dataWithTime];
                   return newHistory.slice(-50);
                 });
+                
+                // Agregar a lecturas pendientes para guardar en BD
+                if (autoSaveEnabled) {
+                  pendingReadingsRef.current.push({
+                    adcValue: data.adc,
+                    forceNewtons: data.fuerza,
+                    timestamp: dataWithTime.timestamp
+                  });
+                }
+                
                 if (isSharing && caregiver?.id) {
                   sendSensorData(data);
                 }
@@ -167,6 +241,11 @@ export default function ForceSensor() {
   // Función para desconectar
   const disconnect = useCallback(async () => {
     try {
+      // Guardar lecturas pendientes antes de desconectar
+      if (pendingReadingsRef.current.length > 0) {
+        await savePendingReadings();
+      }
+
       // Detener compartir primero
       if (isSharing) {
         stopSensorStream();
@@ -188,7 +267,7 @@ export default function ForceSensor() {
     } catch (err) {
       console.error('Error al desconectar:', err);
     }
-  }, [isSharing]);
+  }, [isSharing, savePendingReadings]);
 
   // Iniciar/detener compartir con cuidador
   const toggleSharing = () => {
@@ -212,14 +291,14 @@ export default function ForceSensor() {
     setHistory([]);
   };
 
-  // Calcular porcentaje para la barra de fuerza (máximo razonable ~10N)
-  const forcePercentage = Math.min((currentData.fuerza / 10) * 100, 100);
+  // Calcular porcentaje para la barra de fuerza (máximo razonable ~50N)
+  const forcePercentage = Math.min((currentData.fuerza / 50) * 100, 100);
   
-  // Color basado en la fuerza
+  // Color basado en la fuerza (ajustado para máximo de 50N)
   const getForceColor = (force) => {
-    if (force < 1) return 'bg-green-500';
-    if (force < 3) return 'bg-yellow-500';
-    if (force < 6) return 'bg-orange-500';
+    if (force < 10) return 'bg-green-500';
+    if (force < 25) return 'bg-yellow-500';
+    if (force < 40) return 'bg-orange-500';
     return 'bg-red-500';
   };
 
@@ -371,7 +450,7 @@ export default function ForceSensor() {
           
           <div className="flex justify-between text-sm text-gray-500 mt-1">
             <span>0 N</span>
-            <span>10 N</span>
+            <span>50 N</span>
           </div>
         </div>
 
@@ -399,6 +478,49 @@ export default function ForceSensor() {
               <span className="text-xl font-mono text-gray-800">
                 {history.length}
               </span>
+            </div>
+
+            {/* Estado de guardado automático */}
+            <div className="border-t pt-4 mt-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-gray-600 text-sm">Guardado Automático</span>
+                <button
+                  onClick={() => setAutoSaveEnabled(!autoSaveEnabled)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    autoSaveEnabled ? 'bg-green-500' : 'bg-gray-300'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      autoSaveEnabled ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+              
+              {autoSaveEnabled && (
+                <div className="text-sm space-y-1">
+                  <div className="flex justify-between text-gray-500">
+                    <span>Lecturas guardadas:</span>
+                    <span className="font-mono">{savedCount}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-500">
+                    <span>Pendientes:</span>
+                    <span className="font-mono">{pendingReadingsRef.current.length}</span>
+                  </div>
+                  {isSaving && (
+                    <div className="flex items-center gap-2 text-blue-600">
+                      <div className="animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full"></div>
+                      <span>Guardando...</span>
+                    </div>
+                  )}
+                  {lastSaved && !isSaving && (
+                    <div className="text-green-600 text-xs">
+                      ✓ Último guardado: {lastSaved.toLocaleTimeString()}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
