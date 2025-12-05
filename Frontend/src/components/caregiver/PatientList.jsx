@@ -36,13 +36,13 @@ export default function PatientList() {
 
   const getPatientTypeColor = (type) => {
     const colors = {
-      'elderly': 'bg-purple-100 text-purple-800',
-      'child': 'bg-blue-100 text-blue-800',
-      'disability': 'bg-green-100 text-green-800',
-      'post-surgery': 'bg-orange-100 text-orange-800',
-      'temporary': 'bg-gray-100 text-gray-800'
+      'elderly': 'bg-[#A8C5DB] text-[#2B4C7E]',
+      'child': 'bg-[#f5f0e8] text-[#3A6EA5]',
+      'disability': 'bg-[#7DA5C8] text-white',
+      'post-surgery': 'bg-[#5B8BBE] text-white',
+      'temporary': 'bg-[#e6e0d2] text-[#2B4C7E]'
     };
-    return colors[type] || 'bg-gray-100 text-gray-800';
+    return colors[type] || 'bg-[#e6e0d2] text-[#2B4C7E]';
   };
 
   return (

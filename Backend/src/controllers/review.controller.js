@@ -3,7 +3,6 @@ const User = require('../models/User');
 const Service = require('../models/Service');
 const ServiceRequest = require('../models/ServiceRequest');
 const PatientProfile = require('../models/PatientProfile');
-const Conversation = require('../models/Conversation');
 const asyncHandler = require('express-async-handler');
 
 /**
@@ -68,6 +67,7 @@ exports.createReview = asyncHandler(async (req, res) => {
 exports.getCaregiverReviews = asyncHandler(async (req, res) => {
   const { caregiverId } = req.params;
   const { page = 1, limit = 10 } = req.query;
+  const mongoose = require('mongoose');
 
   const reviews = await Review.find({ caregiver: caregiverId })
     .populate('author', 'name')
@@ -78,28 +78,35 @@ exports.getCaregiverReviews = asyncHandler(async (req, res) => {
   const total = await Review.countDocuments({ caregiver: caregiverId });
 
   // Calcular promedio
-  const stats = await Review.aggregate([
-    { $match: { caregiver: require('mongoose').Types.ObjectId.createFromHexString(caregiverId) } },
-    {
-      $group: {
-        _id: null,
-        averageRating: { $avg: '$rating' },
-        totalReviews: { $sum: 1 },
-        ratings: {
-          $push: '$rating'
+  let ratingStats = { averageRating: 0, totalReviews: 0 };
+  const ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+
+  try {
+    const stats = await Review.aggregate([
+      { $match: { caregiver: new mongoose.Types.ObjectId(caregiverId) } },
+      {
+        $group: {
+          _id: null,
+          averageRating: { $avg: '$rating' },
+          totalReviews: { $sum: 1 },
+          ratings: {
+            $push: '$rating'
+          }
         }
       }
+    ]);
+
+    if (stats.length > 0) {
+      ratingStats = stats[0];
+      // Contar por estrellas
+      if (stats[0]?.ratings) {
+        stats[0].ratings.forEach(r => {
+          ratingDistribution[r] = (ratingDistribution[r] || 0) + 1;
+        });
+      }
     }
-  ]);
-
-  const ratingStats = stats[0] || { averageRating: 0, totalReviews: 0 };
-
-  // Contar por estrellas
-  const ratingDistribution = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-  if (stats[0]?.ratings) {
-    stats[0].ratings.forEach(r => {
-      ratingDistribution[r] = (ratingDistribution[r] || 0) + 1;
-    });
+  } catch (err) {
+    console.error('Error en aggregate de reviews:', err);
   }
 
   res.json({
@@ -154,16 +161,16 @@ exports.deleteReview = asyncHandler(async (req, res) => {
  */
 exports.getCaregiverDashboard = asyncHandler(async (req, res) => {
   const caregiverId = req.user.id;
+  const mongoose = require('mongoose');
 
-  // Servicios activos
+  // Servicios activos (todos los servicios del cuidador)
   const activeServices = await Service.countDocuments({ 
-    caregiver: caregiverId,
-    isActive: true 
+    caregiver: caregiverId
   });
 
   // Servicios del cuidador
-  const services = await Service.find({ caregiver: caregiverId, isActive: true })
-    .select('title price category')
+  const services = await Service.find({ caregiver: caregiverId })
+    .select('title rate tags')
     .limit(5);
 
   // Solicitudes pendientes (nuevas consultas)
@@ -188,29 +195,29 @@ exports.getCaregiverDashboard = asyncHandler(async (req, res) => {
     isActive: true
   });
 
-  // Conversaciones con mensajes no leídos
-  const conversations = await Conversation.find({
-    participants: caregiverId
-  }).populate('lastMessage');
-
-  const unreadConversations = conversations.filter(c => {
-    if (!c.lastMessage) return false;
-    return c.lastMessage.sender.toString() !== caregiverId && !c.lastMessage.read;
-  }).length;
-
   // Estadísticas de reseñas
-  const reviewStats = await Review.aggregate([
-    { $match: { caregiver: require('mongoose').Types.ObjectId.createFromHexString(caregiverId) } },
-    {
-      $group: {
-        _id: null,
-        averageRating: { $avg: '$rating' },
-        totalReviews: { $sum: 1 }
+  let averageRating = 0;
+  let totalReviews = 0;
+  
+  try {
+    const reviewStats = await Review.aggregate([
+      { $match: { caregiver: new mongoose.Types.ObjectId(caregiverId) } },
+      {
+        $group: {
+          _id: null,
+          averageRating: { $avg: '$rating' },
+          totalReviews: { $sum: 1 }
+        }
       }
+    ]);
+    
+    if (reviewStats.length > 0) {
+      averageRating = reviewStats[0].averageRating ? parseFloat(reviewStats[0].averageRating.toFixed(1)) : 0;
+      totalReviews = reviewStats[0].totalReviews || 0;
     }
-  ]);
-
-  const rating = reviewStats[0] || { averageRating: 0, totalReviews: 0 };
+  } catch (err) {
+    console.error('Error en aggregate de reviews:', err);
+  }
 
   // Reseñas recientes
   const recentReviews = await Review.find({ caregiver: caregiverId })
@@ -224,9 +231,8 @@ exports.getCaregiverDashboard = asyncHandler(async (req, res) => {
       activeServices,
       newRequests: pendingRequests,
       activePatients,
-      unreadMessages: unreadConversations,
-      averageRating: rating.averageRating ? parseFloat(rating.averageRating.toFixed(1)) : 0,
-      totalReviews: rating.totalReviews
+      averageRating,
+      totalReviews
     },
     services,
     recentRequests,

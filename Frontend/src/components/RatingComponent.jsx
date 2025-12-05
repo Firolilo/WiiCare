@@ -114,16 +114,16 @@ export default function RatingComponent({
     return (
       <div className="bg-white rounded-xl shadow-md p-6">
         <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#3A6EA5]"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
+    <div className="bg-white rounded-xl shadow-md p-6 border border-[#e6e0d2]">
       {showTitle && (
-        <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+        <h3 className="text-lg font-bold text-[#2B4C7E] mb-4 flex items-center gap-2">
           <i className="bi bi-star-fill text-yellow-400"></i>
           {existingReview ? 'Tu calificación' : `Califica a ${caregiverName}`}
         </h3>
@@ -155,7 +155,7 @@ export default function RatingComponent({
             onChange={(e) => setComment(e.target.value)}
             placeholder="Comparte tu experiencia con este cuidador..."
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+            className="w-full px-3 py-2 border border-[#e6e0d2] rounded-lg focus:ring-2 focus:ring-[#3A6EA5] focus:border-[#3A6EA5] resize-none"
             disabled={loading}
           />
         </div>
@@ -182,7 +182,7 @@ export default function RatingComponent({
           className={`w-full py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
             rating === 0 || loading
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              : 'bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 shadow-md hover:shadow-lg'
+              : 'bg-gradient-to-r from-[#3A6EA5] to-[#2B4C7E] text-white hover:from-[#2B4C7E] hover:to-[#1a3a5c] shadow-md hover:shadow-lg'
           }`}
         >
           {loading ? (

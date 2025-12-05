@@ -49,7 +49,7 @@ export default function GlobalVideoCallManager() {
       // Encontrar el nombre del otro usuario (podríamos necesitar hacer una llamada a la API)
       setActiveCall({ 
         conversationId, 
-        otherUserName: 'Usuario' // Se actualizará cuando abramos el chat
+        otherUserName: 'Paciente' // Se actualizará cuando abramos el chat
       });
     });
 

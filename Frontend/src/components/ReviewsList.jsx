@@ -70,7 +70,7 @@ export default function ReviewsList({ caregiverId, limit = 5 }) {
     return (
       <div className="bg-white rounded-xl shadow-md p-6">
         <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#3A6EA5]"></div>
         </div>
       </div>
     );
@@ -91,11 +91,11 @@ export default function ReviewsList({ caregiverId, limit = 5 }) {
     <div className="bg-white rounded-xl shadow-md overflow-hidden">
       {/* Header con estadísticas */}
       {stats && (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 border-b">
+        <div className="bg-gradient-to-r from-[#f5f0e8] to-[#faf8f5] p-6 border-b border-[#e6e0d2]">
           <div className="flex flex-col md:flex-row md:items-center gap-6">
             {/* Calificación promedio */}
             <div className="text-center md:text-left">
-              <div className="text-5xl font-bold text-gray-800">
+              <div className="text-5xl font-bold text-[#2B4C7E]">
                 {stats.averageRating?.toFixed(1) || 'N/A'}
               </div>
               <div className="flex justify-center md:justify-start mt-1">
@@ -120,9 +120,9 @@ export default function ReviewsList({ caregiverId, limit = 5 }) {
 
       {/* Lista de reseñas */}
       <div className="p-6">
-        <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
-          <i className="bi bi-chat-quote text-blue-500"></i>
-          Opiniones de usuarios
+        <h3 className="font-bold text-[#2B4C7E] mb-4 flex items-center gap-2">
+          <i className="bi bi-chat-quote text-[#3A6EA5]"></i>
+          Opiniones de pacientes
         </h3>
 
         {reviews.length === 0 ? (
@@ -134,10 +134,10 @@ export default function ReviewsList({ caregiverId, limit = 5 }) {
         ) : (
           <div className="space-y-4">
             {reviews.map((review) => (
-              <div key={review._id} className="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
+              <div key={review._id} className="border-b border-[#e6e0d2] last:border-0 pb-4 last:pb-0">
                 <div className="flex items-start gap-3">
                   {/* Avatar */}
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#5B8BBE] to-[#2B4C7E] flex items-center justify-center text-white font-bold text-sm">
                     {review.author?.name?.charAt(0)?.toUpperCase() || 'U'}
                   </div>
                   
@@ -145,7 +145,7 @@ export default function ReviewsList({ caregiverId, limit = 5 }) {
                     {/* Nombre y fecha */}
                     <div className="flex items-center justify-between mb-1">
                       <span className="font-medium text-gray-800">
-                        {review.author?.name || 'Usuario'}
+                        {review.author?.name || 'Paciente'}
                       </span>
                       <span className="text-xs text-gray-400">
                         {new Date(review.createdAt).toLocaleDateString('es-ES', {
@@ -176,20 +176,20 @@ export default function ReviewsList({ caregiverId, limit = 5 }) {
 
         {/* Paginación */}
         {pagination.pages > 1 && (
-          <div className="flex justify-center items-center gap-2 mt-6 pt-4 border-t">
+          <div className="flex justify-center items-center gap-2 mt-6 pt-4 border-t border-[#e6e0d2]">
             <button
               onClick={() => loadReviews(pagination.page - 1)}
               disabled={pagination.page === 1 || loading}
               className={`px-3 py-1 rounded-lg ${
                 pagination.page === 1 || loading
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                  : 'bg-[#f5f0e8] text-[#3A6EA5] hover:bg-[#e6e0d2]'
               }`}
             >
               <i className="bi bi-chevron-left"></i>
             </button>
             
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-[#2B4C7E]">
               Página {pagination.page} de {pagination.pages}
             </span>
             
@@ -199,7 +199,7 @@ export default function ReviewsList({ caregiverId, limit = 5 }) {
               className={`px-3 py-1 rounded-lg ${
                 pagination.page === pagination.pages || loading
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-blue-50 text-blue-600 hover:bg-blue-100'
+                  : 'bg-[#f5f0e8] text-[#3A6EA5] hover:bg-[#e6e0d2]'
               }`}
             >
               <i className="bi bi-chevron-right"></i>

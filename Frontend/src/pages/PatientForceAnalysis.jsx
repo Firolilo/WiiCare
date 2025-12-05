@@ -84,7 +84,7 @@ export default function PatientForceAnalysis() {
     return (
       <div className="max-w-4xl mx-auto p-6">
         <div className="flex items-center justify-center h-64">
-          <div className="animate-spin h-12 w-12 border-4 border-[#7C5C42] border-t-transparent rounded-full"></div>
+          <div className="animate-spin h-12 w-12 border-4 border-[#3A6EA5] border-t-transparent rounded-full"></div>
         </div>
       </div>
     );
@@ -138,11 +138,11 @@ export default function PatientForceAnalysis() {
         <div>
           <button 
             onClick={() => navigate(-1)}
-            className="text-[#7C5C42] hover:underline mb-2 flex items-center gap-1"
+            className="text-[#3A6EA5] hover:underline mb-2 flex items-center gap-1"
           >
             ← Volver
           </button>
-          <h1 className="text-2xl font-bold text-[#5a3825]">
+          <h1 className="text-2xl font-bold text-[#2B4C7E]">
             <i className="bi bi-graph-up-arrow mr-2"></i>Análisis de Fuerza del Paciente
           </h1>
           <p className="text-gray-600">
@@ -209,58 +209,58 @@ export default function PatientForceAnalysis() {
       </div>
 
       {/* Recomendación */}
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6">
-        <h2 className="text-lg font-semibold text-blue-800 mb-2 flex items-center gap-2">
+      <div className="bg-[#f5f0e8] border border-[#e6e0d2] rounded-xl p-6 mb-6">
+        <h2 className="text-lg font-semibold text-[#2B4C7E] mb-2 flex items-center gap-2">
           <i className="bi bi-lightbulb"></i> Recomendación
         </h2>
-        <p className="text-blue-900">
+        <p className="text-[#3A6EA5]">
           {analysis.recommendation}
         </p>
       </div>
 
       {/* Estadísticas Generales */}
-      <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-        <h2 className="text-lg font-semibold text-gray-700 mb-4"><i className="bi bi-bar-chart-fill mr-2"></i>Estadísticas Generales</h2>
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-[#e6e0d2]">
+        <h2 className="text-lg font-semibold text-[#2B4C7E] mb-4"><i className="bi bi-bar-chart-fill mr-2"></i>Estadísticas Generales</h2>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-gray-50 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-[#7C5C42]">
+          <div className="bg-[#f5f0e8] rounded-lg p-4 text-center">
+            <div className="text-2xl font-bold text-[#3A6EA5]">
               {analysis.overall.averageForce} N
             </div>
-            <div className="text-sm text-gray-600">Promedio General</div>
+            <div className="text-sm text-[#5B8BBE]">Promedio General</div>
           </div>
           
-          <div className="bg-gray-50 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-[#7C5C42]">
+          <div className="bg-[#f5f0e8] rounded-lg p-4 text-center">
+            <div className="text-2xl font-bold text-[#3A6EA5]">
               {analysis.overall.maxForce} N
             </div>
-            <div className="text-sm text-gray-600">Máximo Registrado</div>
+            <div className="text-sm text-[#5B8BBE]">Máximo Registrado</div>
           </div>
           
-          <div className="bg-gray-50 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-[#7C5C42]">
+          <div className="bg-[#f5f0e8] rounded-lg p-4 text-center">
+            <div className="text-2xl font-bold text-[#3A6EA5]">
               {analysis.overall.consistencyPercentage}%
             </div>
-            <div className="text-sm text-gray-600">Consistencia</div>
+            <div className="text-sm text-[#5B8BBE]">Consistencia</div>
           </div>
           
-          <div className="bg-gray-50 rounded-lg p-4 text-center">
-            <div className="text-2xl font-bold text-[#7C5C42]">
+          <div className="bg-[#f5f0e8] rounded-lg p-4 text-center">
+            <div className="text-2xl font-bold text-[#3A6EA5]">
               {analysis.overall.daysWithReadings}
             </div>
-            <div className="text-sm text-gray-600">Días con Uso</div>
+            <div className="text-sm text-[#5B8BBE]">Días con Uso</div>
           </div>
         </div>
       </div>
 
       {/* Comparación por Períodos */}
-      <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-        <h2 className="text-lg font-semibold text-gray-700 mb-4"><i className="bi bi-calendar3 mr-2"></i>Comparación por Períodos</h2>
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-[#e6e0d2]">
+        <h2 className="text-lg font-semibold text-[#2B4C7E] mb-4"><i className="bi bi-calendar3 mr-2"></i>Comparación por Períodos</h2>
         
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gray-50">
+              <tr className="bg-[#f5f0e8]">
                 <th className="text-left p-3 rounded-tl-lg">Período</th>
                 <th className="text-center p-3">Promedio</th>
                 <th className="text-center p-3">Máximo</th>
@@ -335,12 +335,12 @@ export default function PatientForceAnalysis() {
             {recentReadings.slice(0, 10).map((reading, idx) => (
               <div 
                 key={idx}
-                className="flex justify-between items-center p-3 bg-gray-50 rounded-lg"
+                className="flex justify-between items-center p-3 bg-[#f5f0e8] rounded-lg"
               >
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-[#5B8BBE]">
                   {new Date(reading.readingTimestamp).toLocaleString()}
                 </div>
-                <div className="font-bold text-[#7C5C42]">
+                <div className="font-bold text-[#3A6EA5]">
                   {reading.forceNewtons.toFixed(2)} N
                 </div>
               </div>

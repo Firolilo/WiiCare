@@ -333,7 +333,7 @@ export default function ChatPage() {
                 <div className="flex-1 text-left overflow-hidden">
                   <div className="flex items-center justify-between mb-1">
                     <h3 className="font-semibold text-white text-sm truncate">
-                      {convo.otherParticipant?.name || 'Usuario'}
+                      {convo.otherParticipant?.name || 'Paciente'}
                     </h3>
                     {convo.lastMessageAt && (
                       <span className="text-xs text-white/60">
@@ -363,10 +363,10 @@ export default function ChatPage() {
                 </div>
                 <div>
                   <h2 className="font-bold text-[#2B4C7E]">
-                    {activeConversation.otherParticipant?.name || 'Usuario'}
+                    {activeConversation.otherParticipant?.name || 'Paciente'}
                   </h2>
                   <p className="text-xs text-gray-500">
-                    {activeConversation.otherParticipant?.role === 'caregiver' ? 'Cuidador profesional' : 'Usuario'}
+                    {activeConversation.otherParticipant?.role === 'caregiver' ? 'Cuidador profesional' : 'Paciente'}
                   </p>
                 </div>
               </div>
@@ -498,7 +498,7 @@ export default function ChatPage() {
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder={`Mensaje a ${activeConversation.otherParticipant?.name || 'usuario'}...`}
+                  placeholder={`Mensaje a ${activeConversation.otherParticipant?.name || 'paciente'}...`}
                   className="flex-1 border border-gray-300 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 px-4 py-3 rounded-full outline-none transition"
                   disabled={sending}
                 />

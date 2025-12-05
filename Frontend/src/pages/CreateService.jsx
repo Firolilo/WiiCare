@@ -191,7 +191,7 @@ export default function CreateService() {
                     value={formData.title}
                     onChange={handleChange}
                     placeholder="Ej: Cuidado especializado de adultos mayores con Alzheimer"
-                    className="w-full border-2 border-gray-300 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 p-3 rounded-lg outline-none transition text-gray-800"
+                    className="w-full border-2 border-[#e6e0d2] focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 p-3 rounded-lg outline-none transition text-gray-800"
                     maxLength="100"
                   />
                   <div className="flex justify-between items-center mt-1">
@@ -215,7 +215,7 @@ export default function CreateService() {
                     value={formData.description}
                     onChange={handleChange}
                     placeholder="Describe tu experiencia, formación, habilidades especiales y qué incluye tu servicio. Ejemplo: 'Cuento con 5 años de experiencia en cuidado de adultos mayores, especialización en Alzheimer y Parkinson. Ofrezco acompañamiento, administración de medicamentos, fisioterapia básica...'"
-                    className="w-full border-2 border-gray-300 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 p-4 rounded-lg outline-none transition resize-none text-gray-800"
+                    className="w-full border-2 border-[#e6e0d2] focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 p-4 rounded-lg outline-none transition resize-none text-gray-800"
                     rows="6"
                     maxLength="500"
                   />
@@ -254,7 +254,7 @@ export default function CreateService() {
                         placeholder="50"
                         min="0"
                         step="0.01"
-                        className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 rounded-lg outline-none transition text-gray-800"
+                        className="w-full pl-12 pr-4 py-3 border-2 border-[#e6e0d2] focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 rounded-lg outline-none transition text-gray-800"
                       />
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
@@ -271,7 +271,7 @@ export default function CreateService() {
                       name="location"
                       value={formData.location}
                       onChange={handleChange}
-                      className="w-full border-2 border-gray-300 focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 p-3 rounded-lg outline-none transition text-gray-800"
+                      className="w-full border-2 border-[#e6e0d2] focus:border-[#3A6EA5] focus:ring-2 focus:ring-[#3A6EA5]/20 p-3 rounded-lg outline-none transition text-gray-800"
                     >
                       <option value="">Seleccionar ciudad...</option>
                       {commonLocations.map(loc => (
@@ -304,7 +304,7 @@ export default function CreateService() {
                       className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                         formData.tags.includes(tag)
                           ? 'bg-[#3A6EA5] text-white shadow-md transform scale-105'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          : 'bg-[#f5f0e8] text-[#2B4C7E] hover:bg-[#e6e0d2]'
                       }`}
                     >
                       {formData.tags.includes(tag) && <i className="bi bi-check-circle-fill mr-1"></i>}
@@ -314,13 +314,13 @@ export default function CreateService() {
                 </div>
 
                 {formData.tags.length > 0 && (
-                  <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-                    <p className="text-sm font-semibold text-blue-900 mb-2">
+                  <div className="mt-4 p-4 bg-[#f5f0e8] rounded-lg border border-[#e6e0d2]">
+                    <p className="text-sm font-semibold text-[#2B4C7E] mb-2">
                       <i className="bi bi-check2-circle"></i> Especialidades seleccionadas ({formData.tags.length}):
                     </p>
                     <div className="flex flex-wrap gap-2">
                       {formData.tags.map(tag => (
-                        <span key={tag} className="bg-blue-200 text-blue-900 px-3 py-1 rounded-full text-sm font-medium">
+                        <span key={tag} className="bg-[#A8C5DB] text-[#2B4C7E] px-3 py-1 rounded-full text-sm font-medium">
                           {tag}
                         </span>
                       ))}
@@ -334,7 +334,7 @@ export default function CreateService() {
                 <button
                   type="button"
                   onClick={() => navigate('/dashboard')}
-                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-4 rounded-xl transition-all font-semibold flex items-center justify-center gap-2"
+                  className="flex-1 bg-[#f5f0e8] hover:bg-[#e6e0d2] text-[#2B4C7E] px-6 py-4 rounded-xl transition-all font-semibold flex items-center justify-center gap-2 border border-[#e6e0d2]"
                   disabled={loading}
                 >
                   <i className="bi bi-x-circle"></i>

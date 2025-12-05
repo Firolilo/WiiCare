@@ -238,52 +238,52 @@ export default function Home() {
 
           {/* Stats Dashboard */}
           <div className="grid md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-white rounded-xl shadow-md p-6 border-t-4 border-blue-500">
+            <div className="bg-white rounded-xl shadow-md p-6 border-t-4 border-[#3A6EA5]">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-gray-600 font-medium">Servicios Activos</span>
-                <span className="text-3xl text-blue-500"><i className="bi bi-bar-chart-fill"></i></span>
+                <span className="text-[#2B4C7E] font-medium">Servicios Activos</span>
+                <span className="text-3xl text-[#3A6EA5]"><i className="bi bi-bar-chart-fill"></i></span>
               </div>
               {loadingStats ? (
-                <div className="animate-pulse h-8 bg-gray-200 rounded w-16"></div>
+                <div className="animate-pulse h-8 bg-[#f5f0e8] rounded w-16"></div>
               ) : (
                 <div className="text-3xl font-bold text-[#2B4C7E]">{dashboardStats?.activeServices || 0}</div>
               )}
-              <div className="text-sm text-green-600 mt-1">Servicios publicados</div>
+              <div className="text-sm text-[#5B8BBE] mt-1">Servicios publicados</div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-md p-6 border-t-4 border-green-500">
+            <div className="bg-white rounded-xl shadow-md p-6 border-t-4 border-[#5B8BBE]">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-gray-600 font-medium">Solicitudes Nuevas</span>
-                <span className="text-3xl text-green-500"><i className="bi bi-chat-dots-fill"></i></span>
+                <span className="text-[#2B4C7E] font-medium">Solicitudes Nuevas</span>
+                <span className="text-3xl text-[#5B8BBE]"><i className="bi bi-chat-dots-fill"></i></span>
               </div>
               {loadingStats ? (
-                <div className="animate-pulse h-8 bg-gray-200 rounded w-16"></div>
+                <div className="animate-pulse h-8 bg-[#f5f0e8] rounded w-16"></div>
               ) : (
                 <div className="text-3xl font-bold text-[#2B4C7E]">{dashboardStats?.newRequests || 0}</div>
               )}
-              <div className="text-sm text-blue-600 mt-1">Pendientes de respuesta</div>
+              <div className="text-sm text-[#3A6EA5] mt-1">Pendientes de respuesta</div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-md p-6 border-t-4 border-yellow-500">
+            <div className="bg-white rounded-xl shadow-md p-6 border-t-4 border-[#7DA5C8]">
               <div className="flex items-center justify-between mb-2">
-                <span className="text-gray-600 font-medium">Calificación</span>
+                <span className="text-[#2B4C7E] font-medium">Calificación</span>
                 <span className="text-3xl text-yellow-500"><i className="bi bi-star-fill"></i></span>
               </div>
               {loadingStats ? (
-                <div className="animate-pulse h-8 bg-gray-200 rounded w-16"></div>
+                <div className="animate-pulse h-8 bg-[#f5f0e8] rounded w-16"></div>
               ) : (
                 <div className="text-3xl font-bold text-[#2B4C7E]">
                   {dashboardStats?.averageRating?.toFixed(1) || 'N/A'}
                 </div>
               )}
-              <div className="text-sm text-gray-600 mt-1">{dashboardStats?.totalReviews || 0} reseñas</div>
+              <div className="text-sm text-[#5B8BBE] mt-1">{dashboardStats?.totalReviews || 0} reseñas</div>
             </div>
           </div>
 
           {/* Tips for Caregivers */}
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-[#3A6EA5] rounded-xl p-6">
+          <div className="bg-gradient-to-r from-[#f5f0e8] to-[#faf8f5] border-l-4 border-[#3A6EA5] rounded-xl p-6">
             <h3 className="font-bold text-[#2B4C7E] text-xl mb-3 flex items-center gap-2"><i className="bi bi-lightbulb"></i> Consejos para destacar</h3>
-            <ul className="space-y-2 text-gray-700">
+            <ul className="space-y-2 text-[#2B4C7E]">
               <li className="flex items-start gap-2">
                 <span className="text-[#3A6EA5]"><i className="bi bi-check-circle-fill"></i></span>
                 <span>Actualiza tus servicios regularmente con fotos y descripciones claras</span>
@@ -306,103 +306,103 @@ export default function Home() {
   // Dashboard para ADMIN
   if (user.role === 'admin') {
     return (
-      <section className="min-h-[calc(100vh-80px)] bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 px-6 py-10">
+      <section className="min-h-[calc(100vh-80px)] bg-gradient-to-br from-[#2B4C7E] via-[#3A6EA5] to-[#2B4C7E] px-6 py-10">
         <div className="max-w-7xl mx-auto">
           {/* Admin Header */}
-          <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl shadow-2xl p-8 mb-8 text-white relative overflow-hidden">
+          <div className="bg-gradient-to-r from-[#1a3a5c] to-[#2B4C7E] rounded-2xl shadow-2xl p-8 mb-8 text-white relative overflow-hidden">
             <div className="absolute top-0 right-0 opacity-10 text-9xl"><i className="bi bi-shield-fill-check"></i></div>
             <h1 className="text-5xl font-extrabold mb-2 relative z-10">Panel de Administración</h1>
-            <p className="text-purple-100 text-xl relative z-10">Bienvenido, {user.name} | Control total de WiiCare</p>
+            <p className="text-[#A8C5DB] text-xl relative z-10">Bienvenido, {user.name} | Control total de WiiCare</p>
           </div>
 
           {/* Admin Stats Grid */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-gradient-to-br from-blue-500 to-blue-700 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all">
+            <div className="bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all border-t-4 border-[#3A6EA5]">
               <div className="flex items-center justify-between mb-3">
-                <div className="text-5xl"><i className="bi bi-people-fill"></i></div>
-                <div className="bg-white/20 rounded-full px-3 py-1 text-sm">+12%</div>
+                <div className="text-5xl text-[#3A6EA5]"><i className="bi bi-people-fill"></i></div>
+                <div className="bg-[#f5f0e8] text-[#2B4C7E] rounded-full px-3 py-1 text-sm font-medium">+12%</div>
               </div>
-              <div className="text-3xl font-bold mb-1">1,247</div>
-              <div className="text-blue-100">Usuarios Totales</div>
+              <div className="text-3xl font-bold mb-1 text-[#2B4C7E]">1,247</div>
+              <div className="text-[#5B8BBE]">Usuarios Totales</div>
             </div>
 
-            <div className="bg-gradient-to-br from-green-500 to-green-700 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all">
+            <div className="bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all border-t-4 border-[#5B8BBE]">
               <div className="flex items-center justify-between mb-3">
-                <div className="text-5xl"><i className="bi bi-briefcase-fill"></i></div>
-                <div className="bg-white/20 rounded-full px-3 py-1 text-sm">+8%</div>
+                <div className="text-5xl text-[#5B8BBE]"><i className="bi bi-briefcase-fill"></i></div>
+                <div className="bg-[#f5f0e8] text-[#2B4C7E] rounded-full px-3 py-1 text-sm font-medium">+8%</div>
               </div>
-              <div className="text-3xl font-bold mb-1">532</div>
-              <div className="text-green-100">Cuidadores Activos</div>
+              <div className="text-3xl font-bold mb-1 text-[#2B4C7E]">532</div>
+              <div className="text-[#5B8BBE]">Cuidadores Activos</div>
             </div>
 
-            <div className="bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all">
+            <div className="bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all border-t-4 border-[#7DA5C8]">
               <div className="flex items-center justify-between mb-3">
-                <div className="text-5xl"><i className="bi bi-clipboard-check-fill"></i></div>
-                <div className="bg-white/20 rounded-full px-3 py-1 text-sm">+24</div>
+                <div className="text-5xl text-[#7DA5C8]"><i className="bi bi-clipboard-check-fill"></i></div>
+                <div className="bg-[#f5f0e8] text-[#2B4C7E] rounded-full px-3 py-1 text-sm font-medium">+24</div>
               </div>
-              <div className="text-3xl font-bold mb-1">89</div>
-              <div className="text-yellow-100">Servicios Publicados</div>
+              <div className="text-3xl font-bold mb-1 text-[#2B4C7E]">89</div>
+              <div className="text-[#5B8BBE]">Servicios Publicados</div>
             </div>
 
-            <div className="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl shadow-lg p-6 text-white transform hover:scale-105 transition-all">
+            <div className="bg-white rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all border-t-4 border-[#A8C5DB]">
               <div className="flex items-center justify-between mb-3">
-                <div className="text-5xl"><i className="bi bi-chat-left-dots-fill"></i></div>
-                <div className="bg-white/20 rounded-full px-3 py-1 text-sm">Live</div>
+                <div className="text-5xl text-[#A8C5DB]"><i className="bi bi-chat-left-dots-fill"></i></div>
+                <div className="bg-[#f5f0e8] text-[#2B4C7E] rounded-full px-3 py-1 text-sm font-medium">Live</div>
               </div>
-              <div className="text-3xl font-bold mb-1">342</div>
-              <div className="text-purple-100">Conversaciones Activas</div>
+              <div className="text-3xl font-bold mb-1 text-[#2B4C7E]">342</div>
+              <div className="text-[#5B8BBE]">Conversaciones Activas</div>
             </div>
           </div>
 
           {/* Admin Quick Actions */}
           <div className="grid md:grid-cols-3 gap-6 mb-8">
-            <button className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 hover:bg-white/20 transition-all text-white group">
-              <div className="text-4xl mb-3 group-hover:scale-110 transition-transform"><i className="bi bi-person-lines-fill"></i></div>
-              <h3 className="font-bold text-lg mb-1">Gestionar Usuarios</h3>
-              <p className="text-gray-300 text-sm">Ver, editar y eliminar usuarios</p>
+            <button className="bg-white/90 backdrop-blur-md border border-[#e6e0d2] rounded-xl p-6 hover:bg-white hover:shadow-lg transition-all group">
+              <div className="text-4xl mb-3 group-hover:scale-110 transition-transform text-[#3A6EA5]"><i className="bi bi-person-lines-fill"></i></div>
+              <h3 className="font-bold text-lg mb-1 text-[#2B4C7E]">Gestionar Usuarios</h3>
+              <p className="text-[#5B8BBE] text-sm">Ver, editar y eliminar usuarios</p>
             </button>
 
-            <button className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 hover:bg-white/20 transition-all text-white group">
-              <div className="text-4xl mb-3 group-hover:scale-110 transition-transform"><i className="bi bi-gear-fill"></i></div>
-              <h3 className="font-bold text-lg mb-1">Configuración</h3>
-              <p className="text-gray-300 text-sm">Ajustes de la plataforma</p>
+            <button className="bg-white/90 backdrop-blur-md border border-[#e6e0d2] rounded-xl p-6 hover:bg-white hover:shadow-lg transition-all group">
+              <div className="text-4xl mb-3 group-hover:scale-110 transition-transform text-[#3A6EA5]"><i className="bi bi-gear-fill"></i></div>
+              <h3 className="font-bold text-lg mb-1 text-[#2B4C7E]">Configuración</h3>
+              <p className="text-[#5B8BBE] text-sm">Ajustes de la plataforma</p>
             </button>
 
-            <button className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 hover:bg-white/20 transition-all text-white group">
-              <div className="text-4xl mb-3 group-hover:scale-110 transition-transform"><i className="bi bi-graph-up"></i></div>
-              <h3 className="font-bold text-lg mb-1">Reportes</h3>
-              <p className="text-gray-300 text-sm">Analíticas y estadísticas</p>
+            <button className="bg-white/90 backdrop-blur-md border border-[#e6e0d2] rounded-xl p-6 hover:bg-white hover:shadow-lg transition-all group">
+              <div className="text-4xl mb-3 group-hover:scale-110 transition-transform text-[#3A6EA5]"><i className="bi bi-graph-up"></i></div>
+              <h3 className="font-bold text-lg mb-1 text-[#2B4C7E]">Reportes</h3>
+              <p className="text-[#5B8BBE] text-sm">Analíticas y estadísticas</p>
             </button>
           </div>
 
           {/* Recent Activity */}
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 text-white">
-            <h3 className="text-2xl font-bold mb-4 flex items-center gap-2">
-              <i className="bi bi-bell-fill"></i> Actividad Reciente
+          <div className="bg-white rounded-xl shadow-lg p-6 border border-[#e6e0d2]">
+            <h3 className="text-2xl font-bold mb-4 flex items-center gap-2 text-[#2B4C7E]">
+              <i className="bi bi-bell-fill text-[#3A6EA5]"></i> Actividad Reciente
             </h3>
             <div className="space-y-3">
-              <div className="bg-white/5 rounded-lg p-4 hover:bg-white/10 transition-all">
+              <div className="bg-[#faf8f5] rounded-lg p-4 hover:bg-[#f5f0e8] transition-all border border-[#e6e0d2]">
                 <div className="flex items-center justify-between">
-                  <div>
+                  <div className="text-[#2B4C7E]">
                     <span className="font-semibold">Nuevo usuario registrado:</span> María González
                   </div>
-                  <span className="text-sm text-gray-300">Hace 5 min</span>
+                  <span className="text-sm text-[#7DA5C8]">Hace 5 min</span>
                 </div>
               </div>
-              <div className="bg-white/5 rounded-lg p-4 hover:bg-white/10 transition-all">
+              <div className="bg-[#faf8f5] rounded-lg p-4 hover:bg-[#f5f0e8] transition-all border border-[#e6e0d2]">
                 <div className="flex items-center justify-between">
-                  <div>
+                  <div className="text-[#2B4C7E]">
                     <span className="font-semibold">Servicio publicado:</span> Cuidado de adultos mayores
                   </div>
-                  <span className="text-sm text-gray-300">Hace 12 min</span>
+                  <span className="text-sm text-[#7DA5C8]">Hace 12 min</span>
                 </div>
               </div>
-              <div className="bg-white/5 rounded-lg p-4 hover:bg-white/10 transition-all">
+              <div className="bg-[#faf8f5] rounded-lg p-4 hover:bg-[#f5f0e8] transition-all border border-[#e6e0d2]">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <span className="font-semibold">Reseña nueva:</span> ⭐⭐⭐⭐⭐ por Juan Pérez
+                  <div className="text-[#2B4C7E]">
+                    <span className="font-semibold">Reseña nueva:</span> <i className="bi bi-star-fill text-yellow-400"></i><i className="bi bi-star-fill text-yellow-400"></i><i className="bi bi-star-fill text-yellow-400"></i><i className="bi bi-star-fill text-yellow-400"></i><i className="bi bi-star-fill text-yellow-400"></i> por Juan Pérez
                   </div>
-                  <span className="text-sm text-gray-300">Hace 1 hora</span>
+                  <span className="text-sm text-[#7DA5C8]">Hace 1 hora</span>
                 </div>
               </div>
             </div>

@@ -176,7 +176,7 @@ export default function Chat() {
                   {caregiver?.name || 'Cuidador'}
                 </h2>
                 <p className="text-sm text-gray-500">
-                  {caregiver?.role === 'caregiver' ? 'Cuidador profesional' : 'Usuario'}
+                  {caregiver?.role === 'caregiver' ? 'Cuidador profesional' : 'Paciente'}
                 </p>
               </div>
             </div>

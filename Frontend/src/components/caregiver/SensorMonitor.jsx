@@ -131,7 +131,7 @@ export default function SensorMonitor() {
       <div className="max-w-2xl mx-auto p-6">
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
           <h2 className="font-bold text-lg mb-2">Paciente no encontrado</h2>
-          <Link to="/mis-pacientes" className="text-blue-600 hover:underline">
+          <Link to="/mis-pacientes" className="text-[#3A6EA5] hover:underline">
             ← Volver a mis pacientes
           </Link>
         </div>
@@ -145,15 +145,15 @@ export default function SensorMonitor() {
       <div className="flex items-center gap-4 mb-6">
         <Link 
           to={`/paciente/${patientProfileId}`}
-          className="text-gray-600 hover:text-gray-900"
+          className="text-[#5B8BBE] hover:text-[#2B4C7E]"
         >
           <i className="bi bi-arrow-left text-2xl"></i>
         </Link>
         <div>
-          <h1 className="text-3xl font-bold text-[#5a3825]">
+          <h1 className="text-3xl font-bold text-[#2B4C7E]">
             <i className="bi bi-broadcast mr-2"></i>Monitor del Sensor
           </h1>
-          <p className="text-gray-600">
+          <p className="text-[#5B8BBE]">
             Paciente: <span className="font-semibold">{patient.patient?.name || 'Sin nombre'}</span>
           </p>
         </div>
@@ -180,8 +180,8 @@ export default function SensorMonitor() {
               disabled={isReceiving}
               className={`px-6 py-2 rounded-lg font-medium transition-colors ${
                 isReceiving 
-                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
-                  : 'bg-blue-500 hover:bg-blue-600 text-white'
+                  ? 'bg-[#e6e0d2] text-[#5B8BBE] cursor-not-allowed' 
+                  : 'bg-[#3A6EA5] hover:bg-[#2B4C7E] text-white'
               }`}
             >
               <i className="bi bi-bell mr-2"></i>
@@ -190,7 +190,7 @@ export default function SensorMonitor() {
             
             <button
               onClick={resetData}
-              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
+              className="px-4 py-2 bg-[#f5f0e8] hover:bg-[#e6e0d2] text-[#2B4C7E] rounded-lg transition-colors border border-[#e6e0d2]"
             >
               <i className="bi bi-arrow-clockwise mr-1"></i>Reset
             </button>
@@ -204,8 +204,8 @@ export default function SensorMonitor() {
         )}
 
         {!isReceiving && (
-          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-            <p className="text-blue-800">
+          <div className="mt-4 p-4 bg-[#f5f0e8] rounded-lg border border-[#e6e0d2]">
+            <p className="text-[#2B4C7E]">
               <i className="bi bi-info-circle mr-2"></i>
               Haz clic en "Solicitar ver sensor" para pedir al paciente que comparta sus datos.
               El paciente debe tener el Arduino conectado y aprobar la transmisión.
@@ -217,11 +217,11 @@ export default function SensorMonitor() {
       {/* Visualización de fuerza actual */}
       <div className="grid md:grid-cols-2 gap-6 mb-6">
         {/* Medidor principal */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-lg font-semibold text-gray-700 mb-4">Fuerza Actual</h2>
+        <div className="bg-white rounded-xl shadow-lg p-6 border border-[#e6e0d2]">
+          <h2 className="text-lg font-semibold text-[#2B4C7E] mb-4">Fuerza Actual</h2>
           
           <div className="text-center mb-6">
-            <div className={`text-6xl font-bold ${isReceiving ? 'text-[#5a3825]' : 'text-gray-300'}`}>
+            <div className={`text-6xl font-bold ${isReceiving ? 'text-[#3A6EA5]' : 'text-[#e6e0d2]'}`}>
               {currentData.fuerza.toFixed(2)}
             </div>
             <div className="text-xl text-gray-500">Newtons (N)</div>
@@ -242,34 +242,34 @@ export default function SensorMonitor() {
         </div>
 
         {/* Estadísticas */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-lg font-semibold text-gray-700 mb-4">Estadísticas</h2>
+        <div className="bg-white rounded-xl shadow-lg p-6 border border-[#e6e0d2]">
+          <h2 className="text-lg font-semibold text-[#2B4C7E] mb-4">Estadísticas</h2>
           
           <div className="space-y-4">
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-              <span className="text-gray-600">Fuerza Máxima</span>
-              <span className="text-2xl font-bold text-[#7C5C42]">
+            <div className="flex justify-between items-center p-3 bg-[#f5f0e8] rounded-lg">
+              <span className="text-[#5B8BBE]">Fuerza Máxima</span>
+              <span className="text-2xl font-bold text-[#2B4C7E]">
                 {maxForce.toFixed(2)} N
               </span>
             </div>
             
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-              <span className="text-gray-600">Valor ADC</span>
-              <span className="text-xl font-mono text-gray-800">
+            <div className="flex justify-between items-center p-3 bg-[#f5f0e8] rounded-lg">
+              <span className="text-[#5B8BBE]">Valor ADC</span>
+              <span className="text-xl font-mono text-[#2B4C7E]">
                 {currentData.adc.toFixed(0)}
               </span>
             </div>
             
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-              <span className="text-gray-600">Muestras recibidas</span>
-              <span className="text-xl font-mono text-gray-800">
+            <div className="flex justify-between items-center p-3 bg-[#f5f0e8] rounded-lg">
+              <span className="text-[#5B8BBE]">Muestras recibidas</span>
+              <span className="text-xl font-mono text-[#2B4C7E]">
                 {history.length}
               </span>
             </div>
 
-            <div className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-              <span className="text-gray-600">Estado</span>
-              <span className={`text-lg font-medium ${isReceiving ? 'text-green-600' : 'text-gray-400'}`}>
+            <div className="flex justify-between items-center p-3 bg-[#f5f0e8] rounded-lg">
+              <span className="text-[#5B8BBE]">Estado</span>
+              <span className={`text-lg font-medium ${isReceiving ? 'text-green-600' : 'text-[#A8C5DB]'}`}>
                 {isReceiving ? '🟢 En vivo' : '⚪ Sin datos'}
               </span>
             </div>
@@ -278,8 +278,8 @@ export default function SensorMonitor() {
       </div>
 
       {/* Gráfico de historial */}
-      <div className="bg-white rounded-xl shadow-lg p-6">
-        <h2 className="text-lg font-semibold text-gray-700 mb-4">Historial de Fuerza</h2>
+      <div className="bg-white rounded-xl shadow-lg p-6 border border-[#e6e0d2]">
+        <h2 className="text-lg font-semibold text-[#2B4C7E] mb-4">Historial de Fuerza</h2>
         
         {history.length > 0 ? (
           <div className="h-48 flex items-end gap-1">
@@ -308,9 +308,11 @@ export default function SensorMonitor() {
       </div>
 
       {/* Información adicional */}
-      <div className="mt-6 bg-[#f5f0e8] rounded-xl p-6">
-        <h3 className="font-semibold text-[#5a3825] mb-3">ℹ️ Información</h3>
-        <ul className="list-disc list-inside space-y-2 text-gray-700">
+      <div className="mt-6 bg-[#f5f0e8] rounded-xl p-6 border border-[#e6e0d2]">
+        <h3 className="font-semibold text-[#2B4C7E] mb-3 flex items-center gap-2">
+          <i className="bi bi-info-circle"></i> Información
+        </h3>
+        <ul className="list-disc list-inside space-y-2 text-[#5B8BBE]">
           <li>Los datos se transmiten en tiempo real desde el sensor del paciente</li>
           <li>El paciente debe autorizar la transmisión desde su dispositivo</li>
           <li>La conexión se mantiene mientras ambos estén conectados</li>

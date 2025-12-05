@@ -7,7 +7,7 @@ export default function NavBar() {
   // Definir color del header según rol
   const getHeaderStyle = () => {
     if (!user) return 'bg-[#FAF9F6] border-[#E0D7C6]';
-    if (user.role === 'admin') return 'bg-gradient-to-r from-slate-900 to-purple-900 border-purple-700';
+    if (user.role === 'admin') return 'bg-gradient-to-r from-[#2B4C7E] to-[#3A6EA5] border-[#2B4C7E]';
     if (user.role === 'caregiver') return 'bg-gradient-to-r from-[#5B8BBE] to-[#3A6EA5] border-[#2B4C7E]';
     return 'bg-gradient-to-r from-[#3A6EA5] to-[#5B8BBE] border-[#3A6EA5]';
   };
@@ -118,7 +118,7 @@ export default function NavBar() {
               </Link>
               <button
                 onClick={logout}
-                className={`${user.role === 'admin' ? 'text-red-400 hover:text-red-300' : 'text-red-200 hover:text-white'} transition-colors flex items-center gap-2`}
+                className="text-red-200 hover:text-white transition-colors flex items-center gap-2"
               >
                 <i className="bi bi-box-arrow-right"></i>
                 Salir

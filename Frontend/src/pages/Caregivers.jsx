@@ -52,8 +52,11 @@ export default function Caregivers() {
 
   if (loading)
     return (
-      <section className="flex justify-center items-center min-h-[calc(100vh-80px)]">
-        <p className="text-[#2B4C7E] font-medium animate-pulse">Cargando cuidadores...</p>
+      <section className="flex justify-center items-center min-h-[calc(100vh-80px)] bg-gradient-to-b from-white to-[#f5f0e8]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#3A6EA5] mx-auto mb-3"></div>
+          <p className="text-[#2B4C7E] font-medium">Cargando cuidadores...</p>
+        </div>
       </section>
     );
 
@@ -77,10 +80,10 @@ export default function Caregivers() {
                   <h3 className="font-semibold text-lg text-[#2B4C7E] mb-1">
                     {c.name}
                   </h3>
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-[#5B8BBE]">
                     {c.location || 'Ubicación no especificada'}
                   </p>
-                  <div className="flex items-center justify-center gap-1 text-sm text-gray-600 mt-1">
+                  <div className="flex items-center justify-center gap-1 text-sm text-[#2B4C7E] mt-1">
                     <i className="bi bi-star-fill text-yellow-400"></i>
                     <span>{c.rating?.toFixed(1) || 'Sin calificación'}</span>
                   </div>
@@ -90,7 +93,7 @@ export default function Caregivers() {
                 {user && user.role !== 'caregiver' && user._id !== c._id && (
                   <button
                     onClick={() => openReviewModal(c)}
-                    className="w-full mt-2 py-2 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-sm rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all flex items-center justify-center gap-2"
+                    className="w-full mt-2 py-2 px-4 bg-gradient-to-r from-[#3A6EA5] to-[#2B4C7E] text-white text-sm rounded-lg hover:from-[#2B4C7E] hover:to-[#1a3a5c] transition-all flex items-center justify-center gap-2"
                   >
                     <i className="bi bi-star"></i>
                     Calificar
@@ -105,15 +108,15 @@ export default function Caregivers() {
       {/* Modal de reseña */}
       {showReviewModal && selectedCaregiver && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto border border-[#e6e0d2]">
             {/* Header del modal */}
-            <div className="flex items-center justify-between p-4 border-b">
-              <h2 className="text-xl font-bold text-gray-800">
+            <div className="flex items-center justify-between p-4 border-b border-[#e6e0d2] bg-[#faf8f5]">
+              <h2 className="text-xl font-bold text-[#2B4C7E]">
                 Calificar a {selectedCaregiver.name}
               </h2>
               <button
                 onClick={closeReviewModal}
-                className="text-gray-500 hover:text-gray-700 transition-colors"
+                className="text-[#7DA5C8] hover:text-[#2B4C7E] transition-colors"
               >
                 <i className="bi bi-x-lg text-xl"></i>
               </button>
@@ -128,7 +131,7 @@ export default function Caregivers() {
                 showTitle={false}
               />
               
-              <div className="border-t pt-4">
+              <div className="border-t border-[#e6e0d2] pt-4">
                 <ReviewsList 
                   caregiverId={selectedCaregiver._id} 
                   limit={3}

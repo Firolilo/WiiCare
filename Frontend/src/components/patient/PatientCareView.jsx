@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { getMyCareDashboard } from '../../api/patientManagement';
+import RatingComponent from '../RatingComponent';
 
 export default function PatientCareView() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
+  const [showRatingModal, setShowRatingModal] = useState(false);
 
   useEffect(() => {
     loadDashboard();
@@ -60,11 +62,22 @@ export default function PatientCareView() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#f5f0e8]">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg">
+      <div className="bg-gradient-to-r from-[#3A6EA5] to-[#5B8BBE] text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-6 py-8">
-          <h1 className="text-3xl font-bold mb-2">Mi Panel de Cuidado</h1>
+          <div className="flex items-center justify-between mb-2">
+            <h1 className="text-3xl font-bold">Mi Panel de Cuidado</h1>
+            {data.profile.caregiver && (
+              <button
+                onClick={() => setShowRatingModal(true)}
+                className="bg-yellow-500 hover:bg-yellow-600 text-white px-5 py-2.5 rounded-lg font-medium transition flex items-center gap-2 shadow-lg"
+              >
+                <i className="bi bi-star-fill"></i>
+                Calificar a mi Cuidador
+              </button>
+            )}
+          </div>
           <div className="flex items-center gap-4 mb-4">
             <div className="bg-white/20 rounded-full px-4 py-2">
               <p className="text-sm">Tu Cuidador</p>
@@ -132,17 +145,17 @@ export default function PatientCareView() {
               <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold text-gray-700">Medicamentos</h3>
-                  <i className="bi bi-capsule text-3xl text-purple-500"></i>
+                  <i className="bi bi-capsule text-3xl text-[#7DA5C8]"></i>
                 </div>
-                <p className="text-3xl font-bold text-purple-600">{data.medications?.length || 0}</p>
+                <p className="text-3xl font-bold text-[#3A6EA5]">{data.medications?.length || 0}</p>
                 <p className="text-sm text-gray-600 mt-1">Activos</p>
               </div>
               <div className="bg-white rounded-lg shadow p-6">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="font-semibold text-gray-700">Próximas Citas</h3>
-                  <i className="bi bi-calendar-event text-3xl text-green-500"></i>
+                  <i className="bi bi-calendar-event text-3xl text-[#5B8BBE]"></i>
                 </div>
-                <p className="text-3xl font-bold text-green-600">{data.appointments?.length || 0}</p>
+                <p className="text-3xl font-bold text-[#2B4C7E]">{data.appointments?.length || 0}</p>
                 <p className="text-sm text-gray-600 mt-1">Programadas</p>
               </div>
             </div>
@@ -220,8 +233,8 @@ export default function PatientCareView() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {data.medications?.map((med) => (
-                  <div key={med._id} className="bg-white rounded-lg shadow p-6">
-                    <h4 className="text-xl font-semibold mb-2"><i className="bi bi-capsule mr-2 text-purple-600"></i>{med.name}</h4>
+                  <div key={med._id} className="bg-white rounded-lg shadow p-6 border border-[#e6e0d2]">
+                    <h4 className="text-xl font-semibold mb-2"><i className="bi bi-capsule mr-2 text-[#3A6EA5]"></i>{med.name}</h4>
                     <p className="text-sm text-gray-600 mb-3">
                       <strong>Dosis:</strong> {med.dose} | <strong>Frecuencia:</strong> {med.frequency}
                     </p>
@@ -379,6 +392,44 @@ export default function PatientCareView() {
           </div>
         )}
       </div>
+
+      {/* Modal de Calificación */}
+      {showRatingModal && data.profile.caregiver && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-[#3A6EA5] to-[#5B8BBE] text-white p-6 rounded-t-2xl">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold flex items-center gap-2">
+                  <i className="bi bi-star-fill"></i>
+                  Calificar a tu Cuidador
+                </h2>
+                <button 
+                  onClick={() => setShowRatingModal(false)}
+                  className="text-white/80 hover:text-white text-2xl"
+                >
+                  <i className="bi bi-x-lg"></i>
+                </button>
+              </div>
+              <p className="text-[#A8C5DB] text-sm mt-1">
+                Comparte tu experiencia con {data.profile.caregiver.name}
+              </p>
+            </div>
+
+            {/* Rating Component */}
+            <div className="p-6">
+              <RatingComponent
+                caregiverId={data.profile.caregiver._id}
+                caregiverName={data.profile.caregiver.name}
+                showTitle={false}
+                onReviewSubmitted={() => {
+                  setTimeout(() => setShowRatingModal(false), 1500);
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

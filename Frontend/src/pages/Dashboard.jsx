@@ -257,7 +257,7 @@ export default function Dashboard() {
                               // TODO: Implementar edición de servicio
                               alert('Función de editar próximamente');
                             }}
-                            className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2"
+                            className="flex-1 bg-[#5B8BBE] hover:bg-[#3A6EA5] text-white px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2"
                           >
                             <i className="bi bi-pencil-square"></i>
                             Editar
@@ -296,7 +296,7 @@ export default function Dashboard() {
                     <p className="font-medium text-lg">
                       {selectedServices.length} servicio{selectedServices.length > 1 ? 's' : ''} seleccionado{selectedServices.length > 1 ? 's' : ''}
                     </p>
-                    <p className="text-sm text-blue-100">
+                    <p className="text-sm text-[#A8C5DB]">
                       Continúa para contactar con los cuidadores
                     </p>
                   </div>
@@ -349,8 +349,8 @@ export default function Dashboard() {
                       key={type.value}
                       className={`flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all ${
                         requestForm.patientType === type.value 
-                          ? 'border-[#3A6EA5] bg-blue-50' 
-                          : 'border-gray-200 hover:border-gray-300'
+                          ? 'border-[#3A6EA5] bg-[#f5f0e8]' 
+                          : 'border-[#e6e0d2] hover:border-[#5B8BBE]'
                       }`}
                     >
                       <input
@@ -384,7 +384,7 @@ export default function Dashboard() {
                     type="date"
                     value={requestForm.startDate}
                     onChange={(e) => setRequestForm({...requestForm, startDate: e.target.value})}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3A6EA5] focus:border-transparent"
+                    className="w-full p-3 border border-[#e6e0d2] rounded-lg focus:ring-2 focus:ring-[#3A6EA5] focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -395,7 +395,7 @@ export default function Dashboard() {
                     type="date"
                     value={requestForm.endDate}
                     onChange={(e) => setRequestForm({...requestForm, endDate: e.target.value})}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3A6EA5] focus:border-transparent"
+                    className="w-full p-3 border border-[#e6e0d2] rounded-lg focus:ring-2 focus:ring-[#3A6EA5] focus:border-transparent"
                   />
                 </div>
               </div>
@@ -409,7 +409,7 @@ export default function Dashboard() {
                   value={requestForm.message}
                   onChange={(e) => setRequestForm({...requestForm, message: e.target.value})}
                   rows={4}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#3A6EA5] focus:border-transparent resize-none"
+                  className="w-full p-3 border border-[#e6e0d2] rounded-lg focus:ring-2 focus:ring-[#3A6EA5] focus:border-transparent resize-none"
                   placeholder="Describe brevemente lo que necesitas..."
                 />
               </div>
@@ -418,7 +418,7 @@ export default function Dashboard() {
               <div className="flex gap-3 pt-2">
                 <button
                   onClick={() => setShowRequestModal(false)}
-                  className="flex-1 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 font-medium transition-all"
+                  className="flex-1 px-4 py-3 border border-[#e6e0d2] text-[#2B4C7E] rounded-lg hover:bg-[#f5f0e8] font-medium transition-all"
                 >
                   Cancelar
                 </button>

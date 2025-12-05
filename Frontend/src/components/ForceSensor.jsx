@@ -67,9 +67,9 @@ export default function ForceSensor({ userId, token }) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg p-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-4">
-        💪 Sensor de Fuerza FSR
+    <div className="bg-white rounded-lg shadow-lg p-6 border border-[#e6e0d2]">
+      <h2 className="text-2xl font-bold text-[#2B4C7E] mb-4 flex items-center gap-2">
+        <i className="bi bi-activity"></i> Sensor de Fuerza FSR
       </h2>
 
       {/* Error */}
@@ -86,15 +86,17 @@ export default function ForceSensor({ userId, token }) {
       )}
 
       {/* Conexión */}
-      <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-        <h3 className="font-semibold text-gray-700 mb-3">🔌 Conexión Arduino</h3>
+      <div className="mb-6 p-4 bg-[#f5f0e8] rounded-lg border border-[#e6e0d2]">
+        <h3 className="font-semibold text-[#2B4C7E] mb-3 flex items-center gap-2">
+          <i className="bi bi-plug-fill"></i> Conexión Arduino
+        </h3>
         
         {!isConnected ? (
           <div className="flex gap-2">
             <select
               value={selectedPort}
               onChange={(e) => setSelectedPort(e.target.value)}
-              className="flex-1 border rounded px-3 py-2"
+              className="flex-1 border border-[#e6e0d2] rounded px-3 py-2 focus:border-[#3A6EA5] outline-none"
             >
               <option value="">Seleccionar puerto...</option>
               {ports.map((port) => (
@@ -105,15 +107,15 @@ export default function ForceSensor({ userId, token }) {
             </select>
             <button
               onClick={() => listPorts()}
-              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded"
+              className="px-4 py-2 bg-[#f5f0e8] hover:bg-[#e6e0d2] rounded border border-[#e6e0d2]"
               title="Refrescar puertos"
             >
-              🔄
+              <i className="bi bi-arrow-clockwise"></i>
             </button>
             <button
               onClick={() => connect(selectedPort)}
               disabled={!selectedPort}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+              className="px-4 py-2 bg-[#3A6EA5] text-white rounded hover:bg-[#2B4C7E] disabled:opacity-50"
             >
               Conectar
             </button>
@@ -136,9 +138,11 @@ export default function ForceSensor({ userId, token }) {
       {/* Lectura en tiempo real */}
       {isConnected && (
         <div className="mb-6">
-          <h3 className="font-semibold text-gray-700 mb-3">📊 Lectura en Tiempo Real</h3>
+          <h3 className="font-semibold text-[#2B4C7E] mb-3 flex items-center gap-2">
+            <i className="bi bi-graph-up"></i> Lectura en Tiempo Real
+          </h3>
           
-          <div className="bg-gray-900 rounded-lg p-6 text-center">
+          <div className="bg-[#2B4C7E] rounded-lg p-6 text-center">
             <div className="text-5xl font-bold text-white mb-2">
               {lastReading ? formatForce(lastReading.forceNewtons) : '--'}
             </div>
@@ -147,7 +151,7 @@ export default function ForceSensor({ userId, token }) {
             </div>
             
             {/* Barra de fuerza */}
-            <div className="mt-4 h-4 bg-gray-700 rounded-full overflow-hidden">
+            <div className="mt-4 h-4 bg-[#5B8BBE] rounded-full overflow-hidden">
               <div
                 className={`h-full transition-all duration-200 ${lastReading ? getForceColor(lastReading.forceNewtons) : ''}`}
                 style={{ width: `${forcePercentage}%` }}
@@ -164,15 +168,17 @@ export default function ForceSensor({ userId, token }) {
 
       {/* Sesión de medición */}
       {isConnected && (
-        <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-          <h3 className="font-semibold text-gray-700 mb-3">📋 Sesión de Medición</h3>
+        <div className="mb-6 p-4 bg-[#f5f0e8] rounded-lg border border-[#e6e0d2]">
+          <h3 className="font-semibold text-[#2B4C7E] mb-3 flex items-center gap-2">
+            <i className="bi bi-clipboard-data"></i> Sesión de Medición
+          </h3>
           
           {!session ? (
             <button
               onClick={() => startSession(userId, token)}
-              className="w-full py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 font-semibold"
+              className="w-full py-3 bg-[#3A6EA5] text-white rounded-lg hover:bg-[#2B4C7E] font-semibold flex items-center justify-center gap-2"
             >
-              ▶️ Iniciar Sesión
+              <i className="bi bi-play-fill"></i> Iniciar Sesión
             </button>
           ) : (
             <div>
@@ -191,23 +197,23 @@ export default function ForceSensor({ userId, token }) {
               {/* Estadísticas */}
               {stats && (
                 <div className="grid grid-cols-3 gap-4 text-center">
-                  <div className="bg-white p-3 rounded shadow">
-                    <div className="text-2xl font-bold text-blue-600">
+                  <div className="bg-white p-3 rounded shadow border border-[#e6e0d2]">
+                    <div className="text-2xl font-bold text-[#3A6EA5]">
                       {formatForce(stats.avg)}
                     </div>
-                    <div className="text-gray-500 text-sm">Promedio</div>
+                    <div className="text-[#5B8BBE] text-sm">Promedio</div>
                   </div>
-                  <div className="bg-white p-3 rounded shadow">
-                    <div className="text-2xl font-bold text-green-600">
+                  <div className="bg-white p-3 rounded shadow border border-[#e6e0d2]">
+                    <div className="text-2xl font-bold text-[#2B4C7E]">
                       {formatForce(stats.max)}
                     </div>
-                    <div className="text-gray-500 text-sm">Máximo</div>
+                    <div className="text-[#5B8BBE] text-sm">Máximo</div>
                   </div>
-                  <div className="bg-white p-3 rounded shadow">
-                    <div className="text-2xl font-bold text-purple-600">
+                  <div className="bg-white p-3 rounded shadow border border-[#e6e0d2]">
+                    <div className="text-2xl font-bold text-[#7DA5C8]">
                       {formatForce(stats.min)}
                     </div>
-                    <div className="text-gray-500 text-sm">Mínimo</div>
+                    <div className="text-[#5B8BBE] text-sm">Mínimo</div>
                   </div>
                 </div>
               )}
@@ -219,12 +225,12 @@ export default function ForceSensor({ userId, token }) {
       {/* Historial reciente */}
       {readings.length > 0 && (
         <div>
-          <h3 className="font-semibold text-gray-700 mb-3">
-            📈 Últimas Lecturas ({readings.length})
+          <h3 className="font-semibold text-[#2B4C7E] mb-3 flex items-center gap-2">
+            <i className="bi bi-clock-history"></i> Últimas Lecturas ({readings.length})
           </h3>
-          <div className="max-h-40 overflow-y-auto">
+          <div className="max-h-40 overflow-y-auto border border-[#e6e0d2] rounded-lg">
             <table className="w-full text-sm">
-              <thead className="bg-gray-100 sticky top-0">
+              <thead className="bg-[#f5f0e8] sticky top-0">
                 <tr>
                   <th className="px-3 py-2 text-left">Hora</th>
                   <th className="px-3 py-2 text-right">ADC</th>

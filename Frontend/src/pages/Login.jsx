@@ -63,7 +63,7 @@ export default function AuthForm() {
     <section className="min-h-[80vh] flex items-center justify-center px-6 py-10">
       <div className="bg-white shadow-md border border-[#E0D7C6] rounded-xl p-8 w-full max-w-md">
         <h1 className="text-2xl font-bold text-[#2B4C7E] mb-6 text-center">
-          {isRegister ? 'Registrar usuario' : 'Iniciar sesión'}
+          {isRegister ? 'Registrar cuenta' : 'Iniciar sesión'}
         </h1>
 
         <form onSubmit={onSubmit} className="space-y-4">
@@ -84,7 +84,7 @@ export default function AuthForm() {
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
               >
-                <option value="user">Usuario</option>
+                <option value="user">Paciente</option>
                 <option value="caregiver">Cuidador</option>
               </select>
             </>
