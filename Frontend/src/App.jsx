@@ -13,6 +13,7 @@ import NavBar from './components/NavBar';
 import GlobalVideoCallManager from './components/GlobalVideoCallManager';
 import { AuthProvider } from './context/AuthContext';
 import { VideoCallProvider } from './context/VideoCallContext';
+import { OnlineUsersProvider } from './context/OnlineUsersContext';
 import ProtectedRoute from './components/ProtectedRoute';
 
 // Caregiver components
@@ -27,27 +28,28 @@ import PatientCareView from './components/patient/PatientCareView';
 export default function App() {
   return (
     <AuthProvider>
-      <VideoCallProvider>
-        <div className="h-screen flex flex-col bg-gradient-to-b from-white to-[#f5f0e8] text-gray-900">
-        {/* Navbar fijo, altura controlada */}
-        <div className="flex-none">
-          <NavBar />
-        </div>
+      <OnlineUsersProvider>
+        <VideoCallProvider>
+          <div className="h-screen flex flex-col bg-gradient-to-b from-white to-[#f5f0e8] text-gray-900">
+          {/* Navbar fijo, altura controlada */}
+          <div className="flex-none">
+            <NavBar />
+          </div>
 
-        {/* Contenido desplazable debajo */}
-        <div className="flex-1 overflow-y-auto">
-          <main className="w-full h-full">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
-              <Route
-                path="/dashboard"
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                }
-              />
+          {/* Contenido desplazable debajo */}
+          <div className="flex-1 overflow-y-auto">
+            <main className="w-full h-full">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
               <Route
                 path="/crear-servicio"
                 element={
@@ -175,8 +177,9 @@ export default function App() {
 
         {/* Gestor Global de Videollamadas - Aparece en TODA la app */}
         <GlobalVideoCallManager />
-      </div>
-      </VideoCallProvider>
+        </div>
+        </VideoCallProvider>
+      </OnlineUsersProvider>
     </AuthProvider>
   );
 }

@@ -2,23 +2,15 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useVideoCall } from '../context/VideoCallContext';
+import { useOnlineUsers } from '../context/OnlineUsersContext';
 import api from '../api/client';
 import { 
   joinConversation, 
   leaveConversation, 
   onNewMessage, 
   onConversationUpdate,
-  onUserOnline,
-  onUserOffline,
-  onOnlineUsersList,
   offNewMessage,
-  offConversationUpdate,
-  offUserOnline,
-  offUserOffline,
-  offOnlineUsersList,
-  requestOnlineUsers,
-  getSocket,
-  isSocketConnected
+  offConversationUpdate
 } from '../socket';
 
 export default function ChatPage() {
@@ -26,6 +18,7 @@ export default function ChatPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const { calling, startVideoCall, cancelVideoCall } = useVideoCall();
+  const { onlineUsers } = useOnlineUsers(); // Usar contexto global
   
   const [conversations, setConversations] = useState([]);
   const [activeConversation, setActiveConversation] = useState(null);
@@ -34,7 +27,6 @@ export default function ChatPage() {
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [loadingMessages, setLoadingMessages] = useState(false);
-  const [onlineUsers, setOnlineUsers] = useState(new Set());
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   const lastMessageCountRef = useRef(0);
@@ -52,63 +44,6 @@ export default function ChatPage() {
   useEffect(() => {
     loadConversations();
   }, []);
-
-  // ✨ Listener para PRESENCIA (solo se ejecuta una vez al montar)
-  useEffect(() => {
-    console.log('🎬 Iniciando listeners de presencia');
-    
-    // Recibir la lista inicial de usuarios en línea
-    onOnlineUsersList(({ userIds }) => {
-      console.log('📋 Lista inicial de usuarios en línea:', userIds);
-      setOnlineUsers(new Set(userIds));
-      console.log('✅ onlineUsers actualizado a:', userIds);
-    });
-
-    // Listener para usuarios que se conectan
-    onUserOnline(({ userId }) => {
-      console.log('🟢 Usuario conectado en ChatPage:', userId);
-      setOnlineUsers(prev => {
-        const newSet = new Set([...prev, userId]);
-        console.log('✅ onlineUsers después de agregar:', Array.from(newSet));
-        return newSet;
-      });
-    });
-
-    // Listener para usuarios que se desconectan
-    onUserOffline(({ userId }) => {
-      console.log('🔴 Usuario desconectado en ChatPage:', userId);
-      setOnlineUsers(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(userId);
-        console.log('✅ onlineUsers después de eliminar:', Array.from(newSet));
-        return newSet;
-      });
-    });
-
-    // Solicitar la lista de usuarios online (por si ya estamos conectados)
-    if (isSocketConnected()) {
-      requestOnlineUsers();
-    } else {
-      // Si el socket no está conectado, esperar a que se conecte
-      const socket = getSocket();
-      if (socket) {
-        const onConnect = () => {
-          console.log('🔌 Socket conectado, solicitando usuarios online...');
-          requestOnlineUsers();
-          socket.off('connect', onConnect);
-        };
-        socket.on('connect', onConnect);
-      }
-    }
-
-    // Cleanup: remover listeners de presencia
-    return () => {
-      console.log('🧹 Limpiando listeners de presencia');
-      offUserOnline();
-      offUserOffline();
-      offOnlineUsersList();
-    };
-  }, []); // SIN dependencias - solo se ejecuta al montar/desmontar
 
   // ✨ Listener GLOBAL para actualizar lista de conversaciones
   useEffect(() => {
