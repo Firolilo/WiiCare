@@ -50,7 +50,6 @@ function setupSocketIO(io) {
       console.log(`✅ User ${userId} joined conversation:${conversationId}`);
       console.log(`📊 Total rooms for this socket:`, Array.from(socket.rooms));
     });
-    });
 
     // Salir de una sala de conversación
     socket.on('leave-conversation', (conversationId) => {
