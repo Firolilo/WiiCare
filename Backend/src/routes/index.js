@@ -8,6 +8,7 @@ const serviceRequestRoutes = require('./serviceRequest.routes');
 const patientManagementRoutes = require('./patientManagement.routes');
 const careTemplateRoutes = require('./careTemplate.routes');
 const patientViewRoutes = require('./patientView.routes');
+const forceRoutes = require('./force.routes');
 
 const router = express.Router();
 
@@ -19,5 +20,6 @@ router.use('/service-requests', serviceRequestRoutes);
 router.use('/patient-management', patientManagementRoutes);
 router.use('/care-templates', careTemplateRoutes);
 router.use('/my-care', patientViewRoutes);
+router.use('/force', forceRoutes);
 
 module.exports = router;
