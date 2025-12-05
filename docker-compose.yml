@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # ============================================
   # NGINX - Load Balancer
@@ -9,24 +7,19 @@ services:
     container_name: wiicare-lb
     ports:
       - "80:80"
-      - "443:443"
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/ssl:/etc/nginx/ssl:ro
     depends_on:
-      - api-1
-      - api-2
+      api-1:
+        condition: service_started
+      api-2:
+        condition: service_started
     networks:
       - wiicare-network
     restart: always
-    healthcheck:
-      test: ["CMD", "nginx", "-t"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   # ============================================
-  # API ACTIVA 1 (Primary)
+  # API ACTIVA 1
   # ============================================
   api-1:
     build:
@@ -36,9 +29,9 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - MONGODB_URI=mongodb://mongo-primary:27017,mongo-secondary:27017,mongo-arbiter:27017/wiicare?replicaSet=rs0
-      - JWT_SECRET=${JWT_SECRET}
-      - CLIENT_URL=${CLIENT_URL}
+      - MONGODB_URI=mongodb://mongo-primary:27017/wiicare?directConnection=true
+      - JWT_SECRET=${JWT_SECRET:-wiicare_secret_key_2024}
+      - CLIENT_URL=${CLIENT_URL:-http://localhost:5173}
       - INSTANCE_ID=api-1
     depends_on:
       mongo-primary:
@@ -46,15 +39,9 @@ services:
     networks:
       - wiicare-network
     restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
   # ============================================
-  # API ACTIVA 2 (Primary)
+  # API ACTIVA 2
   # ============================================
   api-2:
     build:
@@ -64,9 +51,9 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - MONGODB_URI=mongodb://mongo-primary:27017,mongo-secondary:27017,mongo-arbiter:27017/wiicare?replicaSet=rs0
-      - JWT_SECRET=${JWT_SECRET}
-      - CLIENT_URL=${CLIENT_URL}
+      - MONGODB_URI=mongodb://mongo-primary:27017/wiicare?directConnection=true
+      - JWT_SECRET=${JWT_SECRET:-wiicare_secret_key_2024}
+      - CLIENT_URL=${CLIENT_URL:-http://localhost:5173}
       - INSTANCE_ID=api-2
     depends_on:
       mongo-primary:
@@ -74,15 +61,9 @@ services:
     networks:
       - wiicare-network
     restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
   # ============================================
-  # API STANDBY 1 (Pasiva - se activa si falla api-1)
+  # API STANDBY 1 (Backup)
   # ============================================
   api-standby-1:
     build:
@@ -92,9 +73,9 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - MONGODB_URI=mongodb://mongo-primary:27017,mongo-secondary:27017,mongo-arbiter:27017/wiicare?replicaSet=rs0
-      - JWT_SECRET=${JWT_SECRET}
-      - CLIENT_URL=${CLIENT_URL}
+      - MONGODB_URI=mongodb://mongo-primary:27017/wiicare?directConnection=true
+      - JWT_SECRET=${JWT_SECRET:-wiicare_secret_key_2024}
+      - CLIENT_URL=${CLIENT_URL:-http://localhost:5173}
       - INSTANCE_ID=api-standby-1
     depends_on:
       mongo-primary:
@@ -102,18 +83,11 @@ services:
     networks:
       - wiicare-network
     restart: always
-    deploy:
-      replicas: 1
     profiles:
       - standby
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   # ============================================
-  # API STANDBY 2 (Pasiva - se activa si falla api-2)
+  # API STANDBY 2 (Backup)
   # ============================================
   api-standby-2:
     build:
@@ -123,9 +97,9 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
-      - MONGODB_URI=mongodb://mongo-primary:27017,mongo-secondary:27017,mongo-arbiter:27017/wiicare?replicaSet=rs0
-      - JWT_SECRET=${JWT_SECRET}
-      - CLIENT_URL=${CLIENT_URL}
+      - MONGODB_URI=mongodb://mongo-primary:27017/wiicare?directConnection=true
+      - JWT_SECRET=${JWT_SECRET:-wiicare_secret_key_2024}
+      - CLIENT_URL=${CLIENT_URL:-http://localhost:5173}
       - INSTANCE_ID=api-standby-2
     depends_on:
       mongo-primary:
@@ -135,11 +109,6 @@ services:
     restart: always
     profiles:
       - standby
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
   # ============================================
   # MONGODB PRIMARY
@@ -147,12 +116,10 @@ services:
   mongo-primary:
     image: mongo:7.0
     container_name: wiicare-mongo-primary
-    command: mongod --replSet rs0 --bind_ip_all --port 27017
     ports:
       - "27017:27017"
     volumes:
       - mongo-primary-data:/data/db
-      - ./mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     networks:
       - wiicare-network
     restart: always
@@ -161,114 +128,45 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 30s
+      start_period: 20s
 
   # ============================================
-  # MONGODB SECONDARY (Replica para failover)
+  # MONGODB SECONDARY (Replica)
   # ============================================
   mongo-secondary:
     image: mongo:7.0
     container_name: wiicare-mongo-secondary
-    command: mongod --replSet rs0 --bind_ip_all --port 27017
     ports:
       - "27018:27017"
     volumes:
       - mongo-secondary-data:/data/db
-    depends_on:
-      mongo-primary:
-        condition: service_healthy
     networks:
       - wiicare-network
     restart: always
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    profiles:
+      - replica
 
   # ============================================
-  # MONGODB ARBITER (Voto para elección de primary)
+  # MONGODB ARBITER
   # ============================================
   mongo-arbiter:
     image: mongo:7.0
     container_name: wiicare-mongo-arbiter
-    command: mongod --replSet rs0 --bind_ip_all --port 27017
     ports:
       - "27019:27017"
     volumes:
       - mongo-arbiter-data:/data/db
-    depends_on:
-      mongo-primary:
-        condition: service_healthy
     networks:
       - wiicare-network
     restart: always
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # ============================================
-  # MONGO EXPRESS (UI para administración - opcional)
-  # ============================================
-  mongo-express:
-    image: mongo-express:latest
-    container_name: wiicare-mongo-express
-    ports:
-      - "8081:8081"
-    environment:
-      - ME_CONFIG_MONGODB_URL=mongodb://mongo-primary:27017,mongo-secondary:27017/wiicare?replicaSet=rs0
-      - ME_CONFIG_BASICAUTH_USERNAME=admin
-      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_EXPRESS_PASSWORD:-admin123}
-    depends_on:
-      mongo-primary:
-        condition: service_healthy
-    networks:
-      - wiicare-network
-    restart: unless-stopped
     profiles:
-      - tools
-
-  # ============================================
-  # MONGO REPLICA SET INIT (Inicializa el cluster)
-  # ============================================
-  mongo-init-replica:
-    image: mongo:7.0
-    container_name: wiicare-mongo-init
-    depends_on:
-      mongo-primary:
-        condition: service_healthy
-      mongo-secondary:
-        condition: service_started
-      mongo-arbiter:
-        condition: service_started
-    networks:
-      - wiicare-network
-    command: >
-      mongosh --host mongo-primary:27017 --eval '
-        rs.initiate({
-          _id: "rs0",
-          members: [
-            { _id: 0, host: "mongo-primary:27017", priority: 2 },
-            { _id: 1, host: "mongo-secondary:27017", priority: 1 },
-            { _id: 2, host: "mongo-arbiter:27017", arbiterOnly: true }
-          ]
-        });
-      '
-    restart: "no"
+      - replica
 
 networks:
   wiicare-network:
     driver: bridge
-    ipam:
-      config:
-        - subnet: 172.28.0.0/16
 
 volumes:
   mongo-primary-data:
-    driver: local
   mongo-secondary-data:
-    driver: local
   mongo-arbiter-data:
-    driver: local
